@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+/* CSS goes here. */
+.subunit.NORTHWESTERN_FORESTED_MOUNTAINS { fill: #337711; }
+.subunit.NORTH_AMERICAN_DESERTS { fill: #a90; }
+.subunit.MARINE_WEST_COAST_FOREST { fill: #118855; }
+
+.subunit-label {
+    fill: #777;
+    fill-opacity: .5;
+    font: 10px arial, sans-serif;
+    font-weight: 300;
+    text-anchor: middle;
+}
+
+
+</style>
+<body>
+<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="//d3js.org/topojson.v1.min.js"></script>
+<script>
+
+var width = 1160;
+var height = 1160;
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var projection = d3.geo.mercator()
+    .scale(7500)
+    .center([-122, 47])
+    .translate([width/3, height/2]);
+
+var path = d3.geo.path()
+    .projection(projection);
+
+d3.json("washington_ecoregions.json", function(error, ecotopo) {
+  if (error) return console.error(error);
+
+    console.log(ecotopo);
+
+    svg.selectAll(".subunit")
+    .data(topojson.feature(ecotopo, ecotopo.objects.ecoregions).features)
+    .enter().append("path")
+        .attr("class", function(d)
+            {
+              var arr = d.id.split(" ");
+              ret = arr.slice(2, arr.length).join("_");
+              console.log(ret);
+              return "subunit " + ret; })
+        .attr("d", path);
+
+    //add labels for large ecoregions
+    
+});
+</script>
