@@ -3,40 +3,44 @@
 <style>
 
 /* CSS goes here. */
-
+text {
+    font-family: "Georgia";
+}
 text.mapname {
     letter-spacing: 3px;
-    font-family: "Georgia";
     font-size: 50px;
     font-variant: small-caps;
 }
 text.mapsubtitle {
-    font-family: "Georgia";
-    font-size: 16px;
+    font-size: 14px;
 }
 
 text.ecoregion.Mountain {
-    font-family: "Georgia";
     font-size: 24px;
     font-variant: small-caps;
     font-weight: bold;
 }
 text.ecoregion.Marine {
-    font-family: "Georgia";
     font-size: 24px;
     font-variant: small-caps;
     font-weight: bold;
 }
 text.ecoregion.Desert {
-    font-family: "Georgia";
     font-size: 24px;
     font-variant: small-caps;
     font-weight: bold;
 }
+text.ecoregion.selected.title {
+    font-size: 20px;
+    font-variant: small-caps;
+}
+text.ecoregion.selected.detail {
+    font-size: 14px;
+}
 
-.subunit.NORTHWESTERN_FORESTED_MOUNTAINS { fill: #337711; }
-.subunit.NORTH_AMERICAN_DESERTS { fill: #a90; }
-.subunit.MARINE_WEST_COAST_FOREST { fill: #118855; }
+.subunit.NORTHWESTERN_FORESTED_MOUNTAINS { fill: #337711; stroke:none;}
+.subunit.NORTH_AMERICAN_DESERTS { fill: #a90; stroke:none;}
+.subunit.MARINE_WEST_COAST_FOREST { fill: #118855; stroke:none;}
 
 .subunit.NORTH_AMERICAN_DESERTS.Channeled_Scablands { opacity: 0.95; }
 .subunit.NORTH_AMERICAN_DESERTS.Loess_Islands { opacity: 0.7; }
@@ -110,8 +114,8 @@ text.ecoregion.Desert {
 
 </style>
 <body>
-<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
-<script src="//d3js.org/topojson.v1.min.js"></script>
+<script src="d3.v3.min.js" charset="utf-8"></script>
+<script src="topojson.v1.min.js"></script>
 <script>
 
 var width = 1160;
@@ -123,15 +127,9 @@ var svg = d3.select("body").append("svg")
 
     svg.append("text")
     .attr("x", (width/4))
-    .attr("y", (height/7))
+    .attr("y", (height/10))
     .attr("class", "mapname")
     .text("Washington state ecoregions");
-
-    svg.append("text")
-    .attr("x", (width/4 + 8))
-    .attr("y", (height/7 + 18))
-    .attr("class", "mapsubtitle")
-    .text("Hover over an ecological subregion to see its name");
 
 var projection = d3.geo.mercator()
     .scale(7500)
@@ -144,32 +142,42 @@ var path = d3.geo.path()
 d3.json("washington_ecoregions_L1-4.json", function(error, ecotopo) {
   if (error) return console.error(error);
 
-    console.log(ecotopo);
+    //console.log(ecotopo);
 
     svg.selectAll(".subunit")
     .data(topojson.feature(ecotopo, ecotopo.objects.ecoregions).features)
     .enter().append("path")
         .attr("class", function(d)
             {
+              //console.log("id: '" + d.id + "'");
               var l4 = d.id.split(" ");
               var l1 = d.properties.L1.split(" ");
               ret = l1.slice(2, l1.length).join("_") + " " + l4.slice(2, l4.length).join("_")
               ret = ret.replace("/", "_");
-              //console.log(ret);
               return "subunit " + ret; })
+        .on("click", function(d, i){
+            //console.log(d, i);
+            if (selected) {
+                selected.style("stroke", "none");
+            }
+            selected = d3.select(this);
+            selected.style("stroke", "red");
+            changeText(d.id.split(" ").slice(2).join(" "));
+            // console.log(this, d.id, i);
+        })
         .attr("d", path)
+
         //add mouseover text on focus for smaller ecoregions
         .append("svg:title")
         .text(function(d)
             {
               var l4 = d.id.split(" ");
               ret = l4.slice(2, l4.length).join(" ");
-              return ret; });
+              return ret;
+          });
 
     //add title and labels for large ecoregions
-    // Northwestern forested mountains
-    // North American deserts
-    // Marine West Coast forest
+    //TODO: change to L2 ecoregions
     svg.append("text")
         .attr("x", (width/2.5))
         .attr("y", (height/5.5))
@@ -185,6 +193,71 @@ d3.json("washington_ecoregions_L1-4.json", function(error, ecotopo) {
         .attr("y", (height/2))
         .attr("class", "ecoregion Marine")
         .text("Marine West Coast Forest");
+
+
+    //TODO: draw boundary around Seattle's ecoregion as starting selection
+    var selected = null;
+    console.log(selected);
+
+    var selectedText = svg.append("text")
+        .attr("x", (width/4 + 8))
+        .attr("y", (height/8 +5))
+        .attr("class", "ecoregion selected title")
+        .text("");
+
+    //TODO: populate descriptive texts with paragraphs <= 230 characters.
+    var selectedTextDetail = svg.append("text")
+        .attr("x", (width/4 + 8))
+        .attr("y", (height/8 + 20))
+        .attr("class", "ecoregion selected detail")
+        .text("Click on an ecological subregion to see its name.");
+    var selectedTextDetail2 = svg.append("text")
+        .attr("x", (width/4 + 8))
+        .attr("y", (height/8 + 34))
+        .attr("class", "ecoregion selected detail")
+        .text("");
+
+
+    var changeText = function(text){
+        selectedText
+            .transition().duration(100)
+            .style("opacity", 0)
+            .transition().duration(350)
+            .style("opacity", 1)
+            .text(text);
+
+        //TODO: populate descriptive texts with paragraphs <= 230 characters.
+
+        var textDetail = "";
+        var textDetail2 = null;
+        if (textDetail.length > 115){
+            textDetail2 = "the rest of the text";
+        }
+        selectedTextDetail
+            .transition().duration(100)
+            .style("opacity", 0)
+            .transition().duration(350)
+            .style("opacity", 1)
+            .text(textDetail);
+        if (textDetail2 !== null)
+            selectedTextDetail2
+                .transition().duration(100)
+                .style("opacity", 0)
+                .transition().duration(350)
+                .style("opacity", 1)
+                .text(textDetail2);
+        else{
+            selectedTextDetail2
+                .transition().duration(100)
+                .style("opacity", 0)
+                .transition().duration(350)
+                .style("opacity", 1)
+                .text("");
+        }
+
+    }
+    // changeText("Central Puget Lowland");
+
 });
 </script>
 </body>
