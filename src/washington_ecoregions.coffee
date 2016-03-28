@@ -23,7 +23,10 @@ getClassName = (d) ->
     l1 = d.properties.L1.split(' ')[2..]
     return 'subunit ' + l1.join('_') + ' ' + l4.join('_').replace('/', '_')
 
+selected = null
+
 onClick = (d, i) ->
+    console.log selected
     if selected
         selected.style('stroke', 'none')
     selected = d3.select(this)
