@@ -149,9 +149,9 @@ d3.json("washington_ecoregions_L1-4.json", function(error, ecotopo) {
     .enter().append("path")
         .attr("class", function(d)
             {
-              //console.log("id: '" + d.id + "'");
               var l4 = d.id.split(" ");
               var l1 = d.properties.L1.split(" ");
+              console.log("" + l4.slice(2).join(" ") + "");
               ret = l1.slice(2, l1.length).join("_") + " " + l4.slice(2, l4.length).join("_")
               ret = ret.replace("/", "_");
               return "subunit " + ret; })
@@ -254,7 +254,6 @@ d3.json("washington_ecoregions_L1-4.json", function(error, ecotopo) {
                 .style("opacity", 1)
                 .text("");
         }
-
     }
     // changeText("Central Puget Lowland");
 
