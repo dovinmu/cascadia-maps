@@ -31,9 +31,9 @@
     return changeText(d.id.split(' ').slice(2).join(' '));
   };
 
-  selectedText = svg.append('text').attr('x', width / 4 + 8).attr('y', height / 8 + 5).attr('class', 'ecoregion selected title').text('');
+  selectedText = svg.append('text').attr('x', width / 4 + 8).attr('y', height / 8 + 5).attr('class', 'selected title').text('');
 
-  selectedTextDetail = svg.append('text').attr('x', width / 4 + 8).attr('y', height / 8 + 20).attr('class', 'ecoregion selected detail').text('');
+  selectedTextDetail = svg.append('text').attr('x', width / 4 + 8).attr('y', height / 8 + 20).attr('class', 'selected detail').text('');
 
   initMap = function(error, ecotopo) {
     var data;
@@ -41,7 +41,10 @@
       return console.log(error);
     }
     data = topojson.feature(ecotopo, ecotopo.objects.ecoregions);
-    return svg.selectAll('.subunit').data(data.features).enter().append('path').attr('class', getClassName).on('click', onClick).attr('d', path);
+    svg.selectAll('.subunit').data(data.features).enter().append('path').attr('class', getClassName).on('click', onClick).attr('d', path);
+    svg.append("text").attr("x", width / 2.5).attr("y", height / 5.5).attr("class", "label").text("Northwestern Forested Mountains");
+    svg.append("text").attr("x", width / 1.8).attr("y", height / 2).attr("class", "label").text("North American Deserts");
+    return svg.append("text").attr("x", width / 9).attr("y", height / 2).attr("class", "label").text("Marine West Coast Forest");
   };
 
   changeText = function(text, textDetail) {

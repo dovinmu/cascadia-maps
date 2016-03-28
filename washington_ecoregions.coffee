@@ -47,13 +47,29 @@ initMap = (error, ecotopo) ->
     if error then return console.log error
 
     data = topojson.feature(ecotopo, ecotopo.objects.ecoregions)
-
+    #add level 4 ecosystems
     svg.selectAll('.subunit')
         .data(data.features).enter()
         .append('path')
         .attr('class', getClassName)
         .on('click', onClick)
         .attr('d', path)
+    #add level 1 ecosystem labels
+    svg.append("text")
+        .attr("x", (width/2.5))
+        .attr("y", (height/5.5))
+        .attr("class", "label")
+        .text("Northwestern Forested Mountains");
+    svg.append("text")
+        .attr("x", (width/1.8))
+        .attr("y", (height/2))
+        .attr("class", "label")
+        .text("North American Deserts");
+    svg.append("text")
+        .attr("x", (width/9))
+        .attr("y", (height/2))
+        .attr("class", "label")
+        .text("Marine West Coast Forest");
 
 changeText = (text, textDetail) ->
     selectedText
