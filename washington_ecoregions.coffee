@@ -4,17 +4,20 @@ height = 1160
 svg = d3.select('body').append('svg')
     .attr('width', width)
     .attr('height', height)
+
 svg.append('text')
     .attr('x', (width/4))
     .attr('y', (height/10))
     .attr('class', 'mapname')
     .text('Washington state ecoregions')
+
 projection = d3.geo.mercator()
     .scale(7500)
     .center([-122, 47])
     .translate([width/3, height/2])
 
 path = d3.geo.path().projection(projection)
+
 getClassName = (d) ->
     l4 = d.id.split(' ')[2..]
     l1 = d.properties.L1.split(' ')[2..]
@@ -31,13 +34,13 @@ onClick = (d, i) ->
 selectedText = svg.append('text')
 .attr('x', (width/4 + 8))
 .attr('y', (height/8 + 5))
-.attr('class', 'ecoregion selected title')
+.attr('class', 'selected title')
 .text('')
 #ecoregion detail displays
 selectedTextDetail = svg.append('text')
 .attr('x', (width/4 + 8))
 .attr('y', (height/8 + 20))
-.attr('class', 'ecoregion selected detail')
+.attr('class', 'selected detail')
 .text('')
 
 initMap = (error, ecotopo) ->
