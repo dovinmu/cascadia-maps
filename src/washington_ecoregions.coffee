@@ -87,5 +87,5 @@ changeText = (text, textDetail) ->
         .style('opacity',1)
         .text(textDetail)
 
-d3.json("washington_ecoregions_L1-4.json", initMap)
+d3.json("washington.topojson", initMap)
 changeText('', 'Click on an ecological subregion to see its name.')
