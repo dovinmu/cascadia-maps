@@ -7,12 +7,20 @@ from pandas import DataFrame
 Scrape all 3365 hikes from wta.org at one every 5 seconds (for a total runtime of ~4.5 hours) to get a dataset.
 '''
 
-hike_dict = {}
+try:
+    df = DataFrame.from_csv('wta_hikes.csv')
+    hike_dict = df.T.to_dict()
+    with open('start_idx') as f:
+        start = int(f.read())
+except:
+    hike_dict = {}
+    start = 0
+
 total = 3365
-#total = 30
-for i in range(0, total, 30):
+for i in range(start, total, 30):
     r = requests.get('http://www.wta.org/go-hiking/hikes?b_start:int={}'.format(i))
     soup = BeautifulSoup(r.text, 'lxml')
+    count = i
     for item in soup.findAll('div', attrs={'class':'search-result-item'}):
         #name = item.findAll('div')[9].find('span').text
         try:
@@ -36,9 +44,12 @@ for i in range(0, total, 30):
         except:
             region = 'region not found'
         hike_dict[name] = (link, region, coords[0], coords[1])
-        print(name)
+        print(count, name, region, coords)
+        count+=1
         #scrape gently
         time.sleep(5)
     df = DataFrame(hike_dict, index=['link', 'region', 'lat', 'lon']).T
     df.to_csv('wta_hikes.csv')
-    print('total hikes: {}'.format(i))
+    with open('start_idx','w') as f:
+        f.write(str(i + 30))
+    print('\n\twrote out {} hikes\n'.format(len(df)))
