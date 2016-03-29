@@ -1,10 +1,10 @@
-import requests
+yimport requests
 from bs4 import BeautifulSoup
 import time
 import re
 from pandas import DataFrame
 '''
-Scrape all 3365 hikes from wta.org at one every 10 seconds (for a total runtime of ~9 hours) to get a dataset.
+Scrape all 3365 hikes from wta.org at one every 5 seconds (for a total runtime of ~4.5 hours) to get a dataset.
 '''
 
 hike_dict = {}
@@ -38,5 +38,7 @@ for i in range(0, total, 30):
         hike_dict[name] = (link, region, coords[0], coords[1])
         print(name)
         #scrape gently
-        time.sleep(10)
-df = DataFrame(hike_dict, index=['link', 'region', 'lat', 'lon']).T
+        time.sleep(5)
+    df = DataFrame(hike_dict, index=['link', 'region', 'lat', 'lon']).T
+    df.to_csv('wta_hikes.csv')
+    print('total hikes: {}'.format(i))
