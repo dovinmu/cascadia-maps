@@ -20,7 +20,6 @@ total = 3365
 for i in range(start, total, 30):
     r = requests.get('http://www.wta.org/go-hiking/hikes?b_start:int={}'.format(i))
     soup = BeautifulSoup(r.text, 'lxml')
-    count = i
     for item in soup.findAll('div', attrs={'class':'search-result-item'}):
         #name = item.findAll('div')[9].find('span').text
         try:
@@ -44,8 +43,7 @@ for i in range(start, total, 30):
         except:
             region = 'region not found'
         hike_dict[name] = (link, region, coords[0], coords[1])
-        print(count, name, region, coords)
-        count+=1
+        print(len(hike_dict), name, region, coords)
         #scrape gently
         time.sleep(5)
     df = DataFrame(hike_dict, index=['link', 'region', 'lat', 'lon']).T
