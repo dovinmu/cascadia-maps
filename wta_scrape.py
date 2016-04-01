@@ -54,7 +54,7 @@ for i in range(start, total, 30):
         #print(len(hike_dict), name + ':', region, '\n', rating, ',', ratingCount, 'votes', coords)
         print('{}. {}: {}\n\t{} from {} votes. {}'.format(len(hike_dict), name, region, rating, ratingCount, coords))
         #scrape gently
-        time.sleep(5)
+        time.sleep(3)
     df = DataFrame(hike_dict, index=['link', 'region', 'rating', 'ratingCount', 'lat', 'lon']).T
     df.to_csv('wta_hikes.csv')
     with open('start_idx','w') as f:
