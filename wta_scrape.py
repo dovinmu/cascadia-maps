@@ -31,7 +31,10 @@ for i in range(start, total, 30):
             trail_r = requests.get(link)
         except:
             time.sleep(5)
-            trail_r = requests.get(link)
+            try:
+                trail_r = requests.get(link)
+            except:
+                continue
         trail_soup = BeautifulSoup(trail_r.text, 'lxml')
         try:
             coords = trail_soup.find(text=re.compile('Co-ordinates')).parent()[0:2]
