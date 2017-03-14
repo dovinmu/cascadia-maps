@@ -1,5 +1,6 @@
 width = 1160
 height = 1160
+treename = "pinucont"
 
 svg = d3.select('body').append('svg')
     .attr('width', width)
@@ -9,7 +10,7 @@ svg.append('text')
     .attr('x', (width/4))
     .attr('y', (height/10))
     .attr('class', 'mapname')
-    .text('Washington state ecoregions')
+    .text(treename)
 
 projection = d3.geo.mercator()
     .scale(7500)
@@ -26,12 +27,14 @@ getClassName = (d) ->
 selected = null
 
 onClick = (d, i) ->
-    console.log selected
-    if selected
-        selected.style('stroke', 'none')
+    # console.log selected
+    # console.log d
+    #if selected
+    #    selected.style('fill', 'black')
     selected = d3.select(this)
-    selected.style('stroke', 'red')
-    changeText(d.id.split(' ')[2..].join(' '))
+    selected.style('fill', 'red')
+    # changeText(d.id.split(' ')[2..].join(' '))
+    changeText(d.id)
 
 #ecoregion name display
 selectedText = svg.append('text')
@@ -57,22 +60,6 @@ initMap = (error, ecotopo) ->
         .attr('class', getClassName)
         .on('click', onClick)
         .attr('d', path)
-    #add level 1 ecosystem labels
-    svg.append("text")
-        .attr("x", (width/2.5))
-        .attr("y", (height/5.5))
-        .attr("class", "label")
-        .text("Northwestern Forested Mountains");
-    svg.append("text")
-        .attr("x", (width/1.8))
-        .attr("y", (height/2))
-        .attr("class", "label")
-        .text("North American Deserts");
-    svg.append("text")
-        .attr("x", (width/9))
-        .attr("y", (height/2))
-        .attr("class", "label")
-        .text("Marine West Coast Forest");
 
 changeText = (text, textDetail) ->
     selectedText
@@ -91,4 +78,35 @@ changeText = (text, textDetail) ->
         .text(textDetail)
 
 d3.json("washington.topojson", initMap)
+
+drawDot = (x,y) ->
+    coordinates = projection([x,y]);
+    svg.append('circle')
+        .attr('cx', coordinates[0])
+        .attr('cy', coordinates[1])
+        .attr('r', 2)
+        .style('fill', 'purple')
+
+drawSHP = (shp, source) ->
+    if not shp.done
+        # console.log shp.value.geometry.coordinates[0][0]
+        for coords in shp.value.geometry.coordinates[0]
+            drawDot(coords[0], coords[1])
+        svg.selectAll('.trees')
+          .data(shp.value.geometry).enter()
+          .append('path')
+          .style('fill', 'green')
+          .attr('d', path)
+        console.log 'drew'
+        source.read().then((shp) -> drawSHP(shp, source))
+
+shapefile.open("tree_range/"+treename+".shp", null)
+    .then((source) ->
+        source.read().then((shp) -> drawSHP(shp, source))
+    )
+    .catch((error) ->
+        console.log "aww heck"
+        console.log error
+    )
+
 changeText('', 'Click on an ecological subregion to see its name.')
