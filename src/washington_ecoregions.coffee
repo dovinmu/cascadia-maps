@@ -1,6 +1,11 @@
 width = 1160
 height = 1160
-treename = "pinucont"
+treename = "abieamab"
+
+Array::unique = ->
+  output = {}
+  output[@[key]] = @[key] for key in [0...@length]
+  value for key, value of output
 
 svg = d3.select('body').append('svg')
     .attr('width', width)
@@ -32,9 +37,40 @@ onClick = (d, i) ->
     #if selected
     #    selected.style('fill', 'black')
     selected = d3.select(this)
-    selected.style('fill', 'red')
+    tree_id = selected.attr('id')
+    tree_class = selected.attr('class')
+    console.log "select all: ", tree_class
+    if tree_id
+        region_class = tree_class.split(' ')[1]
+        tree_class = '.' + tree_class.split(' ')[2]
+        fill = '#000'
+        if region_class == ""
+            fill = '#333'
+        else if region_class == ""
+            fill = '#666'
+        else if region_class == ""
+            fill = '#999'
+        d3.selectAll(tree_class)
+          .style('fill', fill)
+          .attr('id', null)
+    else
+        tree_class = '.' + tree_class.split(' ')[2]
+        d3.selectAll(tree_class)
+          .style('fill', 'red')
+          .attr('id', 'in-map')
+
     # changeText(d.id.split(' ')[2..].join(' '))
     changeText(d.id)
+
+onSubmit = (d, i) ->
+    console.log "selecting reds"
+    treemap = []
+    selected = d3.selectAll("#in-map")
+        .each((d) ->
+            treemap.push '"' + d.id + '",' + "\n"
+            # console.log d
+            )
+    console.log treemap.unique().join('\n')
 
 #ecoregion name display
 selectedText = svg.append('text')
@@ -49,10 +85,23 @@ selectedTextDetail = svg.append('text')
 .attr('class', 'selected detail')
 .text('')
 
+# to get list of regions where the tree exists
+submitText = svg.append('text')
+  .attr('x', (width - 100))
+  .attr('y', (height/8 + 5))
+  .attr('class', 'submit')
+  .text('Submit')
+  .on('click', onSubmit)
+
 initMap = (error, ecotopo) ->
     if error then return console.log error
 
     data = topojson.feature(ecotopo, ecotopo.objects.ecoregions)
+
+    feature_string = ""
+    # for feature in data.features
+    #   feature_string += '"' + feature.id + '",\n'
+    # console.log feature_string
     #add level 4 ecosystems
     svg.selectAll('.subunit')
         .data(data.features).enter()
@@ -97,7 +146,6 @@ drawSHP = (shp, source) ->
           .append('path')
           .style('fill', 'green')
           .attr('d', path)
-        console.log 'drew'
         source.read().then((shp) -> drawSHP(shp, source))
 
 shapefile.open("tree_range/"+treename+".shp", null)
