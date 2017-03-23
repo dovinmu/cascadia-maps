@@ -1,6 +1,6 @@
 width = 1160
 height = 1160
-treename = "abieamab"
+treename = "alnurubr"
 
 Array::unique = ->
   output = {}
@@ -63,11 +63,11 @@ onClick = (d, i) ->
     changeText(d.id)
 
 onSubmit = (d, i) ->
-    console.log "selecting reds"
+    console.log "selecting reds for " + treename
     treemap = []
     selected = d3.selectAll("#in-map")
         .each((d) ->
-            treemap.push '"' + d.id + '",' + "\n"
+            treemap.push '"' + d.id + '",'
             # console.log d
             )
     console.log treemap.unique().join('\n')
@@ -87,7 +87,7 @@ selectedTextDetail = svg.append('text')
 
 # to get list of regions where the tree exists
 submitText = svg.append('text')
-  .attr('x', (width - 100))
+  .attr('x', (width - 200))
   .attr('y', (height/8 + 5))
   .attr('class', 'submit')
   .text('Submit')
@@ -147,7 +147,10 @@ drawSHP = (shp, source) ->
           .style('fill', 'green')
           .attr('d', path)
         source.read().then((shp) -> drawSHP(shp, source))
+    else
+        console.log "done"
 
+console.log "drawing dem trees"
 shapefile.open("tree_range/"+treename+".shp", null)
     .then((source) ->
         source.read().then((shp) -> drawSHP(shp, source))
@@ -156,5 +159,4 @@ shapefile.open("tree_range/"+treename+".shp", null)
         console.log "aww heck"
         console.log error
     )
-
 changeText('', 'Click on an ecological subregion to see its name.')
