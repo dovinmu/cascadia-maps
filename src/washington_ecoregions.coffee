@@ -1,11 +1,7 @@
 width = 1160
 height = 1160
-treename = "alnurubr"
-
-Array::unique = ->
-  output = {}
-  output[@[key]] = @[key] for key in [0...@length]
-  value for key, value of output
+selected = null
+region_trees = {}
 
 svg = d3.select('body').append('svg')
     .attr('width', width)
@@ -15,7 +11,7 @@ svg.append('text')
     .attr('x', (width/4))
     .attr('y', (height/10))
     .attr('class', 'mapname')
-    .text(treename)
+    .text('Washington state ecoregions')
 
 projection = d3.geo.mercator()
     .scale(7500)
@@ -29,48 +25,13 @@ getClassName = (d) ->
     l1 = d.properties.L1.split(' ')[2..]
     return 'subunit ' + l1.join('_') + ' ' + l4.join('_').replace('/', '_')
 
-selected = null
-
 onClick = (d, i) ->
-    # console.log selected
-    # console.log d
-    #if selected
-    #    selected.style('fill', 'black')
+    if selected
+        selected.style('stroke', 'none')
     selected = d3.select(this)
-    tree_id = selected.attr('id')
-    tree_class = selected.attr('class')
-    console.log "select all: ", tree_class
-    if tree_id
-        region_class = tree_class.split(' ')[1]
-        tree_class = '.' + tree_class.split(' ')[2]
-        fill = '#000'
-        if region_class == ""
-            fill = '#333'
-        else if region_class == ""
-            fill = '#666'
-        else if region_class == ""
-            fill = '#999'
-        d3.selectAll(tree_class)
-          .style('fill', fill)
-          .attr('id', null)
-    else
-        tree_class = '.' + tree_class.split(' ')[2]
-        d3.selectAll(tree_class)
-          .style('fill', 'red')
-          .attr('id', 'in-map')
-
-    # changeText(d.id.split(' ')[2..].join(' '))
-    changeText(d.id)
-
-onSubmit = (d, i) ->
-    console.log "selecting reds for " + treename
-    treemap = []
-    selected = d3.selectAll("#in-map")
-        .each((d) ->
-            treemap.push '"' + d.id + '",'
-            # console.log d
-            )
-    console.log treemap.unique().join('\n')
+    selected.style('stroke', 'red')
+    tree_list = region_trees[d.id]
+    changeText(d.id.split(' ')[2..].join(' '), tree_list.join(', '))
 
 #ecoregion name display
 selectedText = svg.append('text')
@@ -85,23 +46,25 @@ selectedTextDetail = svg.append('text')
 .attr('class', 'selected detail')
 .text('')
 
-# to get list of regions where the tree exists
-submitText = svg.append('text')
-  .attr('x', (width - 200))
-  .attr('y', (height/8 + 5))
-  .attr('class', 'submit')
-  .text('Submit')
-  .on('click', onSubmit)
+processTree = (tree) ->
+    console.log "~~~" + tree["common"] + "~~~"
+    # we need to lookup a region to get the tree
+    region_trees[region].push(tree["common"]) for region in tree["regions"]
+
+loadJson = (fname) ->
+    console.log "loading", fname
+    fetch(fname, {method:'get'})
+        .then((response) -> response.json())
+        .then((json) -> processTree tree for tree in json["trees"])
+        .then(() -> console.log region_trees)
+        .catch((e) ->
+          console.log "FLAGRANT ERROR:", e
+        )
 
 initMap = (error, ecotopo) ->
     if error then return console.log error
 
     data = topojson.feature(ecotopo, ecotopo.objects.ecoregions)
-
-    feature_string = ""
-    # for feature in data.features
-    #   feature_string += '"' + feature.id + '",\n'
-    # console.log feature_string
     #add level 4 ecosystems
     svg.selectAll('.subunit')
         .data(data.features).enter()
@@ -109,6 +72,25 @@ initMap = (error, ecotopo) ->
         .attr('class', getClassName)
         .on('click', onClick)
         .attr('d', path)
+    #add level 1 ecosystem labels
+    svg.append("text")
+        .attr("x", (width/2.5))
+        .attr("y", (height/5.5))
+        .attr("class", "label")
+        .text("Northwestern Forested Mountains")
+    svg.append("text")
+        .attr("x", (width/1.8))
+        .attr("y", (height/2))
+        .attr("class", "label")
+        .text("North American Deserts")
+    svg.append("text")
+        .attr("x", (width/9))
+        .attr("y", (height/2))
+        .attr("class", "label")
+        .text("Marine West Coast Forest")
+
+    region_trees[path.id] = [] for path in data.features
+    loadJson('trees_wa.json')
 
 changeText = (text, textDetail) ->
     selectedText
@@ -127,36 +109,4 @@ changeText = (text, textDetail) ->
         .text(textDetail)
 
 d3.json("washington.topojson", initMap)
-
-drawDot = (x,y) ->
-    coordinates = projection([x,y]);
-    svg.append('circle')
-        .attr('cx', coordinates[0])
-        .attr('cy', coordinates[1])
-        .attr('r', 2)
-        .style('fill', 'purple')
-
-drawSHP = (shp, source) ->
-    if not shp.done
-        # console.log shp.value.geometry.coordinates[0][0]
-        for coords in shp.value.geometry.coordinates[0]
-            drawDot(coords[0], coords[1])
-        svg.selectAll('.trees')
-          .data(shp.value.geometry).enter()
-          .append('path')
-          .style('fill', 'green')
-          .attr('d', path)
-        source.read().then((shp) -> drawSHP(shp, source))
-    else
-        console.log "done"
-
-console.log "drawing dem trees"
-shapefile.open("tree_range/"+treename+".shp", null)
-    .then((source) ->
-        source.read().then((shp) -> drawSHP(shp, source))
-    )
-    .catch((error) ->
-        console.log "aww heck"
-        console.log error
-    )
 changeText('', 'Click on an ecological subregion to see its name.')
