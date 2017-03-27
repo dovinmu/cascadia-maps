@@ -1,4 +1,4 @@
-width = 1160
+width = 1350
 height = 1160
 selected = null
 region_trees = {}
@@ -8,14 +8,14 @@ svg = d3.select('body').append('svg')
     .attr('height', height)
 
 svg.append('text')
-    .attr('x', (width/4))
-    .attr('y', (height/10))
+    .attr('x', (width/6))
+    .attr('y', (50))
     .attr('class', 'mapname')
     .text('Washington state ecoregions')
 
 projection = d3.geo.mercator()
     .scale(7500)
-    .center([-122, 47])
+    .center([-121.5, 46.5])
     .translate([width/3, height/2])
 
 path = d3.geo.path().projection(projection)
@@ -25,26 +25,35 @@ getClassName = (d) ->
     l1 = d.properties.L1.split(' ')[2..]
     return 'subunit ' + l1.join('_') + ' ' + l4.join('_').replace('/', '_')
 
+showImage = (name, i) ->
+    fname = name.toLowerCase().replace(/ /g, '_') + ".jpg"
+    console.log "appending " + fname, i
+    x = width - 250
+    y = 150 + (i//2) * 300
+    if i % 2 == 1
+        x = width - 125
+    svg.append("svg:image")
+      .attr("xlink:href", "images/" + fname)
+      .attr("x", x)
+      .attr("y", y)
+      .attr("width", 150)
+      .attr("height", 300)
+
+removeImages = () ->
+    console.log "removing"
+    svg.selectAll("image").remove()
+
 onClick = (d, i) ->
     if selected
         selected.style('stroke', 'none')
+    removeImages()
     selected = d3.select(this)
     selected.style('stroke', 'red')
     tree_list = region_trees[d.id]
     changeText(d.id.split(' ')[2..].join(' '), tree_list.join(', '))
-
-#ecoregion name display
-selectedText = svg.append('text')
-.attr('x', (width/4 + 8))
-.attr('y', (height/8 + 5))
-.attr('class', 'selected title')
-.text('')
-#ecoregion detail displays
-selectedTextDetail = svg.append('text')
-.attr('x', (width/4 + 8))
-.attr('y', (height/8 + 20))
-.attr('class', 'selected detail')
-.text('')
+    yOffset = 0
+    showImage tree,i for tree,i in tree_list
+    # showImage("Douglas Fir")
 
 processTree = (tree) ->
     console.log "~~~" + tree["common"] + "~~~"
@@ -91,6 +100,19 @@ initMap = (error, ecotopo) ->
 
     region_trees[path.id] = [] for path in data.features
     loadJson('trees_wa.json')
+
+#ecoregion name display
+selectedText = svg.append('text')
+.attr('x', (width/6 + 8))
+.attr('y', (70))
+.attr('class', 'selected title')
+.text('')
+#ecoregion detail displays
+selectedTextDetail = svg.append('text')
+.attr('x', (width/6 + 8))
+.attr('y', (85))
+.attr('class', 'selected detail')
+.text('')
 
 changeText = (text, textDetail) ->
     selectedText
