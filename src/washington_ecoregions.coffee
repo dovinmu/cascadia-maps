@@ -2,6 +2,7 @@ width = 1350
 height = 1160
 selected = null
 region_trees = {}
+sizes = {x:90, y:180, padding:10}
 
 svg = d3.select('body').append('svg')
     .attr('width', width)
@@ -27,20 +28,23 @@ getClassName = (d) ->
 
 showImage = (name, i) ->
     fname = name.toLowerCase().replace(/ /g, '_') + ".jpg"
-    console.log "appending " + fname, i
-    x = width - 250
-    y = 150 + (i//2) * 300
-    if i % 2 == 1
-        x = width - 125
+    # console.log "appending " + fname, i
+    y = 100 + (i//3) * (sizes.y + sizes.padding)
+    if i % 3 == 0
+      x = width - 3 * (sizes.x + sizes.padding)
+    if i % 3 == 1
+      x = width - 2 * (sizes.x + sizes.padding)
+    if i % 3 == 2
+      x = width - 1 * (sizes.x + sizes.padding)
     svg.append("svg:image")
       .attr("xlink:href", "images/" + fname)
       .attr("x", x)
       .attr("y", y)
-      .attr("width", 150)
-      .attr("height", 300)
+      .attr("width", sizes.x)
+      .attr("height", sizes.y)
 
 removeImages = () ->
-    console.log "removing"
+    # console.log "removing"
     svg.selectAll("image").remove()
 
 onClick = (d, i) ->
@@ -83,18 +87,18 @@ initMap = (error, ecotopo) ->
         .attr('d', path)
     #add level 1 ecosystem labels
     svg.append("text")
-        .attr("x", (width/2.5))
-        .attr("y", (height/5.5))
+        .attr("x", (width/3))
+        .attr("y", (height/7))
         .attr("class", "label")
         .text("Northwestern Forested Mountains")
     svg.append("text")
-        .attr("x", (width/1.8))
+        .attr("x", (width/2.3))
         .attr("y", (height/2))
         .attr("class", "label")
         .text("North American Deserts")
     svg.append("text")
-        .attr("x", (width/9))
-        .attr("y", (height/2))
+        .attr("x", (width/10))
+        .attr("y", (height/3))
         .attr("class", "label")
         .text("Marine West Coast Forest")
 
