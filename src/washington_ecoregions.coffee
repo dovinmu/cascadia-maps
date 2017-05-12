@@ -38,6 +38,7 @@ initMap = (error, ecotopo) ->
         .attr('class', getClassNameEco)
         .on('click', onClickEco)
         .attr('d', path)
+        .style('fill', getColor)
     #add level 1 ecosystem labels
     svg.append("text")
         .attr("x", (width/3))
@@ -82,7 +83,11 @@ onClickTree = (d, i) ->
         region_list = tree_regions[selectedTree.id]
         d3.selectAll('.'+getSubClassNameEco(region)).style('opacity', '1') for region in region_list
     selectedTree = this
-    d3.select(selectedTree).style('opacity', '0.5')
+    # change tree opacities
+    d3.selectAll('image').style('opacity', '0.5')
+    d3.select(selectedTree).style('opacity', '1')
+
+    # change region opacities
     region_list = tree_regions[selectedTree.id]
     d3.selectAll(".subunit").style('opacity', '0.25')
     d3.selectAll('.'+getSubClassNameEco(region)).style('opacity', '1') for region in region_list
@@ -92,7 +97,7 @@ onClickEco = (d, i) ->
         selected.style('stroke', 'none')
     if selectedTree
         region_list = tree_regions[selectedTree.id]
-        d3.selectAll('.'+getSubClassNameEco(region)).style('-webkit-filter', 'grayscale(0%)') for region in region_list
+        d3.selectAll('.subunit').style('opacity', '1') for region in region_list
         selectedTree = null
     removeImages()
     selected = d3.select(this)
@@ -132,6 +137,34 @@ getClassNameEco = (d) ->
     subclass = getSubClassNameEco(d.id)
     l1 = d.properties.L1.split(' ')[2..]
     return 'subunit ' + l1.join('_') + ' ' + subclass
+
+getColor = (d, i) ->
+    l1_dict = {'10':'#aa9900', '6':'#337711', '7':'#118855'}
+    j = 0
+    l4_dict = {}
+    for letter, index in 'abcdefghijklmnopqrstuvwxyz'
+        l4_dict[letter] = index
+
+    l1 = d.properties.L1.split(' ')[0]
+    l4 = d.id.split(' ')[0]
+    l2 = parseInt(l4.slice(0, -1))
+    letter = l4.slice(-1)
+
+    base = l1_dict[l1]
+    percent = (l4_dict[letter] % 5) / 10
+    color = shadeColor2(base, percent)
+    console.log base, percent, color, d.properties.L1
+    color
+
+shadeColor2 = (color, percent) ->
+    # hacker cowboy code copied from http://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
+    f = parseInt(color.slice(1),16)
+    t = if percent<0 then 0 else 255
+    p = if percent<0 then percent*-1 else percent
+    R = f>>16
+    G = f>>8&0x00FF
+    B = f&0x0000FF
+    return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1)
 
 getSubClassNameEco = (s) ->
     l4 = s.split(' ')[2..]
