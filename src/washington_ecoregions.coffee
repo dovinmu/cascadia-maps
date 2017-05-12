@@ -8,6 +8,8 @@ region_trees = {}
 tree_regions = {}
 sizes = {x:90, y:180, padding:10}
 
+overflow_limit = 25
+
 # setup projection
 svg = d3.select('body').append('svg')
     .attr('width', width)
@@ -78,11 +80,12 @@ onClickTree = (d, i) ->
     if selectedTree
         d3.select(selectedTree).style('opacity', '1')
         region_list = tree_regions[selectedTree.id]
-        d3.selectAll('.'+getSubClassNameEco(region)).style('-webkit-filter', 'grayscale(0%)') for region in region_list
+        d3.selectAll('.'+getSubClassNameEco(region)).style('opacity', '1') for region in region_list
     selectedTree = this
     d3.select(selectedTree).style('opacity', '0.5')
     region_list = tree_regions[selectedTree.id]
-    d3.selectAll('.'+getSubClassNameEco(region)).style('-webkit-filter', 'grayscale(100%)') for region in region_list
+    d3.selectAll(".subunit").style('opacity', '0.25')
+    d3.selectAll('.'+getSubClassNameEco(region)).style('opacity', '1') for region in region_list
 
 onClickEco = (d, i) ->
     if selected
@@ -140,9 +143,12 @@ getClassNameTree = (s) ->
 splitText = (text) ->
     split = text.split(' ')
     result = ''
-    while result.length < 20
-        result += split.shift() + ' '
-    return result, split.join(' ')
+    while result.length < overflow_limit and split
+        if result.length + split[0].length <= overflow_limit
+          result += split.shift() + ' '
+        else
+          break
+    return [result, split.join(' ')]
 
 #ecoregion name display
 selectedText = svg.append('text')
@@ -150,6 +156,13 @@ selectedText = svg.append('text')
 .attr('y', (70))
 .attr('class', 'selected title')
 .text('')
+
+overflowText = svg.append('text')
+.attr('x', (width - width/4.5))
+.attr('y', (90))
+.attr('class', 'selected title')
+.text('')
+
 #ecoregion detail displays
 selectedTextDetail = svg.append('text')
 .attr('x', (width/6 + 8))
@@ -159,24 +172,28 @@ selectedTextDetail = svg.append('text')
 
 changeText = (text, textDetail) ->
     overflow = ''
-    if text.length > 30
+    if text.length > overflow_limit
         list = splitText(text)
         text = list[0]
         overflow = list[1]
     selectedText
-        .transition().duration(100)
+        .transition().duration(50)
         .style('opacity', 0)
-        .transition().duration(350)
+        .transition().duration(250)
         .style('opacity', 1)
         .text(text)
-    if overflow
-        console.log overflow
+    overflowText
+        .transition().duration(50)
+        .style('opacity', 0)
+        .transition().duration(250)
+        .style('opacity', 1)
+        .text(overflow)
     if not textDetail
         textDetail = ''
     selectedTextDetail
-        .transition().duration(100)
+        .transition().duration(50)
         .style('opacity',0)
-        .transition().duration(350)
+        .transition().duration(250)
         .style('opacity',1)
         .text(textDetail)
 
