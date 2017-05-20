@@ -1,0 +1,15 @@
+{
+  "name": "cascadia-maps",
+  "version": "0.8.0",
+  "description": "Making beautiful interactive maps of Cascadia in D3",
+  "scripts": {
+    "dev": "npm run coffee-compile && npm start",
+    "coffee-compile": "coffee -o lib/ -cw src/",
+    "open-browser": "xdg-open http://localhost:8080/washington.html",
+    "start": "http-server"
+  },
+  "devDependencies": {
+    "coffeescript": "^1.2.6",
+    "http-server": "^0.10.0"
+  }
+}
