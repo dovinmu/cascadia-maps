@@ -35,12 +35,12 @@ mapTitle = svg.append('text')
     .attr('x', (width/6))
     .attr('y', (50))
     .attr('class', 'mapname')
-    .text('Washington state trees')
+    .text('Washington state evergreens')
 mapDescription = svg.append('text')
     .attr('x', (width/6 + 10))
     .attr('y', (75))
     .attr('class', 'selected detail')
-    .text('Click on an ecoregion to see the list of trees native to it.')
+    .text('Click on an ecoregion to see the list of evergreen trees native to it.')
 
 #ecoregion name display
 treeMenuText = svg.append('text')
@@ -97,7 +97,7 @@ initMap = (error, ecotopo) ->
                                    ]
 
     region_trees[path.id] = [] for path in data.features
-    loadJson('trees.json')
+    loadJson('trees.wa.json')
 
 
 # create lists of regions <==> trees
@@ -114,7 +114,7 @@ loadJson = (fname) ->
     console.log "loading", fname
     fetch(fname, {method:'get'})
         .then((response) -> response.json())
-        .then((json) -> processTree tree for tree in json["trees"])
+        .then((json) -> processTree tree for tree in json["evergreen"])
         .then(() -> console.log region_trees)
         .catch((e) ->
           console.log "FLAGRANT ERROR:", e
