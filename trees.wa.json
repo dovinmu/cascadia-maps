@@ -374,47 +374,47 @@
         },
         {
             "common": "Whitebark Pine",
-            "latin": "",
+            "latin": "Pinus albicaulis",
             "regions": []
         },
         {
             "common": "Engelmann Spruce",
-            "latin": "",
+            "latin": "Picea engelmannii",
             "regions": []
         },
         {
             "common": "Subalpine Fir",
-            "latin": "",
+            "latin": "Abies lasiocarpa",
             "regions": []
         },
         {
             "common": "Grand Fir",
-            "latin": "",
+            "latin": "Abies grandis",
             "regions": []
         },
         {
             "common": "Noble Fir",
-            "latin": "",
+            "latin": "Abies procera",
             "regions": []
         },
         {
             "common": "Western Redcedar",
-            "latin": "",
+            "latin": "Thuja plicata",
             "regions": []
         },
         {
             "common": "Alaska-Cedar",
-            "latin": "",
+            "latin": "Chamaecyparis nootkatensis",
             "regions": []
         },
         {
             "common": "Rocky Mountain Juniper",
-            "latin": "",
+            "latin": "Juniperus scopulorum",
             "regions": []
         },
         {
             "common": "Pacific Madrone",
-            "latin": "",
+            "latin": "Arbutus menziesii",
             "regions": []
         }
     ]
