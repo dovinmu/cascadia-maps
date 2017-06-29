@@ -375,47 +375,204 @@
         {
             "common": "Whitebark Pine",
             "latin": "Pinus albicaulis",
-            "regions": []
+            "regions": [
+            	"15x  Okanogan Highland Dry Forest",
+              "4b  Western Cascades Montane Highlands",
+              "4c  Cascade Crest Montane Forest",
+              "4d  Cascade Subalpine/Alpine",
+              "77b  North Cascades Highland Forests",
+              "77c  North Cascades Subalpine/Alpine",
+              "77d  Pasayten/Sawtooth Highlands",
+              "77g  Wenatchee/Chelan Highlands",
+              "77h  Chiwaukum Hills and Lowlands",
+              "77i  High Olympics"
+            ]
         },
         {
             "common": "Engelmann Spruce",
             "latin": "Picea engelmannii",
-            "regions": []
+            "regions": [
+            	"11f  Canyons and Dissected Highlands",
+              "15r  Okanogan-Colville Xeric Valleys and Foothills",
+              "15v  Northern Idaho Hills and Low Relief Mountains",
+              "15w  Western Selkirk Maritime Forest",
+              "15x  Okanogan Highland Dry Forest",
+              "15y  Selkirk Mountains",
+              "4b  Western Cascades Montane Highlands",
+              "4c  Cascade Crest Montane Forest",
+              "4d  Cascade Subalpine/Alpine",
+              "77a  North Cascades Lowland Forests",
+              "77b  North Cascades Highland Forests",
+              "77c  North Cascades Subalpine/Alpine",
+              "77d  Pasayten/Sawtooth Highlands",
+              "77e  Okanogan Pine/Fir Hills",
+              "77g  Wenatchee/Chelan Highlands",
+              "77h  Chiwaukum Hills and Lowlands",
+              "9b  Grand Fir Mixed Forest"
+            ]
         },
         {
             "common": "Subalpine Fir",
             "latin": "Abies lasiocarpa",
-            "regions": []
+            "regions": [
+            	"11f  Canyons and Dissected Highlands",
+              "15r  Okanogan-Colville Xeric Valleys and Foothills",
+              "15w  Western Selkirk Maritime Forest",
+              "15x  Okanogan Highland Dry Forest",
+              "15y  Selkirk Mountains",
+              "1c  Low Olympics",
+              "4b  Western Cascades Montane Highlands",
+              "4c  Cascade Crest Montane Forest",
+              "4d  Cascade Subalpine/Alpine",
+              "77b  North Cascades Highland Forests",
+              "77c  North Cascades Subalpine/Alpine",
+              "77d  Pasayten/Sawtooth Highlands",
+              "77e  Okanogan Pine/Fir Hills",
+              "77g  Wenatchee/Chelan Highlands",
+              "77h  Chiwaukum Hills and Lowlands",
+              "77i  High Olympics",
+              "9b  Grand Fir Mixed Forest"
+            ]
         },
         {
             "common": "Grand Fir",
             "latin": "Abies grandis",
-            "regions": []
+            "regions": [
+              "11f  Canyons and Dissected Highlands",
+              "11l  Mesic Forest Zone",
+              "15r  Okanogan-Colville Xeric Valleys and Foothills",
+              "15x  Okanogan Highland Dry Forest",
+              "15y  Selkirk Mountains",
+              "1a  Coastal Lowlands",
+              "1b  Coastal Uplands",
+              "1c  Low Olympics",
+              "1d  Volcanics",
+              "1e  Outwash",
+              "1f  Willapa Hills",
+              "2a  Fraser Lowland",
+              "2b  Eastern Puget Riverine Lowlands",
+              "2c  San Juan Islands",
+              "2d  Olympic Rainshadow",
+              "2e  Eastern Puget Uplands",
+              "2f  Central Puget Lowland",
+              "2g  Southern Puget Prairies",
+              "2h  Cowlitz/Chehalis Foothills",
+              "2i  Cowlitz/Newaukum Prairie Floodplains",
+              "3a  Portland/Vancouver Basin",
+              "3d  Valley Foothills",
+              "4a  Western Cascades Lowlands and Valleys",
+              "4b  Western Cascades Montane Highlands",
+              "4c  Cascade Crest Montane Forest",
+              "4d  Cascade Subalpine/Alpine",
+              "77a  North Cascades Lowland Forests",
+              "77b  North Cascades Highland Forests",
+              "77c  North Cascades Subalpine/Alpine",
+              "77d  Pasayten/Sawtooth Highlands",
+              "77g  Wenatchee/Chelan Highlands",
+              "77h  Chiwaukum Hills and Lowlands",
+              "9b  Grand Fir Mixed Forest",
+              "9c  Oak/Conifer Foothills"
+            ]
         },
         {
             "common": "Noble Fir",
             "latin": "Abies procera",
-            "regions": []
+            "regions": [
+              "4a  Western Cascades Lowlands and Valleys",
+              "4b  Western Cascades Montane Highlands",
+              "4c  Cascade Crest Montane Forest",
+              "77b  North Cascades Highland Forests"
+            ]
         },
         {
             "common": "Western Redcedar",
             "latin": "Thuja plicata",
-            "regions": []
+            "regions": [
+              "15u  Inland Maritime Foothills and Valleys",
+              "15w  Western Selkirk Maritime Forest",
+              "15x  Okanogan Highland Dry Forest",
+              "15y  Selkirk Mountains",
+              "1a  Coastal Lowlands",
+              "1b  Coastal Uplands",
+              "1c  Low Olympics",
+              "1d  Volcanics",
+              "1e  Outwash",
+              "1f  Willapa Hills",
+              "2a  Fraser Lowland",
+              "2b  Eastern Puget Riverine Lowlands",
+              "2c  San Juan Islands",
+              "2d  Olympic Rainshadow",
+              "2e  Eastern Puget Uplands",
+              "2f  Central Puget Lowland",
+              "2g  Southern Puget Prairies",
+              "2h  Cowlitz/Chehalis Foothills",
+              "2i  Cowlitz/Newaukum Prairie Floodplains",
+              "3a  Portland/Vancouver Basin",
+              "3d  Valley Foothills",
+              "4a  Western Cascades Lowlands and Valleys",
+              "4b  Western Cascades Montane Highlands",
+              "4c  Cascade Crest Montane Forest",
+              "4d  Cascade Subalpine/Alpine",
+              "77a  North Cascades Lowland Forests",
+              "77b  North Cascades Highland Forests",
+              "77i  High Olympics",
+              "9b  Grand Fir Mixed Forest",
+              "9c  Oak/Conifer Foothills"
+            ]
         },
         {
             "common": "Alaska-Cedar",
             "latin": "Chamaecyparis nootkatensis",
-            "regions": []
+            "regions": [
+              "1c  Low Olympics",
+              "1d  Volcanics",
+              "1e  Outwash",
+              "4b  Western Cascades Montane Highlands",
+              "4c  Cascade Crest Montane Forest",
+              "4d  Cascade Subalpine/Alpine",
+              "77b  North Cascades Highland Forests",
+              "77c  North Cascades Subalpine/Alpine",
+              "77g  Wenatchee/Chelan Highlands",
+              "77i  High Olympics",
+              "9b  Grand Fir Mixed Forest"
+            ]
         },
         {
             "common": "Rocky Mountain Juniper",
             "latin": "Juniperus scopulorum",
-            "regions": []
+            "regions": [
+              "10a  Channeled Scablands",
+              "10g  Yakima Folds",
+              "15y  Selkirk Mountains",
+              "1c  Low Olympics",
+              "2a  Fraser Lowland",
+              "2b  Eastern Puget Riverine Lowlands",
+              "2c  San Juan Islands",
+              "2e  Eastern Puget Uplands",
+              "77g  Wenatchee/Chelan Highlands"
+            ]
         },
         {
             "common": "Pacific Madrone",
             "latin": "Arbutus menziesii",
-            "regions": []
+            "regions": [
+              "1b  Coastal Uplands",
+              "1d  Volcanics",
+              "1e  Outwash",
+              "1f  Willapa Hills",
+              "2a  Fraser Lowland",
+              "2b  Eastern Puget Riverine Lowlands",
+              "2d  Olympic Rainshadow",
+              "2e  Eastern Puget Uplands",
+              "2f  Central Puget Lowland",
+              "2g  Southern Puget Prairies",
+              "2h  Cowlitz/Chehalis Foothills",
+              "2i  Cowlitz/Newaukum Prairie Floodplains",
+              "3a  Portland/Vancouver Basin",
+              "3d  Valley Foothills",
+              "4a  Western Cascades Lowlands and Valleys",
+              "77a  North Cascades Lowland Forests"
+            ]
         }
     ]
 }
