@@ -29,18 +29,19 @@ mountainLabel = null
 desertLabel = null
 
 disclaimer = []
+quote = []
 
 # set map name and description
 mapTitle = svg.append('text')
     .attr('x', (width/6))
     .attr('y', (50))
     .attr('class', 'mapname')
-    .text('Washington state trees')
+    .text('Washington state evergreens')
 mapDescription = svg.append('text')
     .attr('x', (width/6 + 10))
     .attr('y', (75))
     .attr('class', 'selected detail')
-    .text('Click on an ecoregion to see the list of trees native to it.')
+    .text('Click on an ecoregion to see the list of evergreen trees native to it.')
 
 #ecoregion name display
 treeMenuText = svg.append('text')
@@ -95,10 +96,20 @@ initMap = (error, ecotopo) ->
                                     "available and not guaranteed to be",
                                     "accurate."
                                    ]
+    quote.push(svg.append("text")
+        .attr("x", (width - width/4.5))
+        .attr("y", (110) + i*20)
+        .attr("class", "quote")
+        .style('opacity', 0)
+        .text(line)) for line,i in ["A tree is beautiful, but what’s more, it has a right ",
+                                    "to life; like water, the sun and the stars, it is ",
+                                    "essential. Life on earth is inconceivable without trees.",
+                                    " - Chekov"
+                                   ]
 
     region_trees[path.id] = [] for path in data.features
-    loadJson('trees.json')
-
+    loadJson('trees.wa.json')
+    showQuote()
 
 # create lists of regions <==> trees
 processTree = (tree) ->
@@ -114,7 +125,7 @@ loadJson = (fname) ->
     console.log "loading", fname
     fetch(fname, {method:'get'})
         .then((response) -> response.json())
-        .then((json) -> processTree tree for tree in json["trees"])
+        .then((json) -> processTree tree for tree in json["evergreen"])
         .then(() -> console.log region_trees)
         .catch((e) ->
           console.log "FLAGRANT ERROR:", e
@@ -143,7 +154,7 @@ onClickTree = (d, i) ->
     setTitleAndDescription(name, description)
 
 onClickEco = (d, i) ->
-    hideDisclaimer()
+    hideTreeMenuText()
     if selected
         selected.style('stroke', 'none')
     if selectedTree
@@ -238,7 +249,6 @@ splitText = (text) ->
           result += split.shift() + ' '
         else
           break
-    console.log result, split
     return [result, split.join(' ')]
 
 setTitleAndDescription = (title, description) ->
@@ -309,6 +319,16 @@ showLabels = () ->
         .transition().duration(50)
         .style('opacity', 1)
 
+showQuote = () ->
+    removeImages()
+    setTreeMenuText("")
+    line
+        .transition().duration(50)
+        .style('opacity', 1) for line in quote
+    console.log "HI"
+
+
+
 showDisclaimer = () ->
     removeImages()
     setTreeMenuText("Disclaimer")
@@ -316,10 +336,13 @@ showDisclaimer = () ->
         .transition().duration(50)
         .style('opacity', 1) for line in disclaimer
 
-hideDisclaimer = () ->
+hideTreeMenuText = () ->
     line
         .transition().duration(50)
         .style('opacity', 0) for line in disclaimer
+    line
+        .transition().duration(50)
+        .style('opacity', 0) for line in quote
 
 d3.json("washington.topojson", initMap)
-setTreeMenuText('', 'Click on an ecological subregion to see its name.')
+# setTreeMenuText('', 'Click on an ecological subregion to see its name.')

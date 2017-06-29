@@ -3,7 +3,8 @@
   "version": "0.8.0",
   "description": "Making beautiful interactive maps of Cascadia in D3",
   "scripts": {
-    "dev": "start npm run coffee-compile && start http-server",
+    "dev": "npm run coffee-compile & http-server",
+    "dev-win": "start npm run coffee-compile && start http-server",
     "coffee-compile": "coffee -o lib/ -cw src/"
   },
   "devDependencies": {
