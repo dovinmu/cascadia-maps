@@ -485,42 +485,6 @@
             ]
         },
         {
-            "common": "Western Redcedar",
-            "latin": "Thuja plicata",
-            "regions": [
-              "15u  Inland Maritime Foothills and Valleys",
-              "15w  Western Selkirk Maritime Forest",
-              "15x  Okanogan Highland Dry Forest",
-              "15y  Selkirk Mountains",
-              "1a  Coastal Lowlands",
-              "1b  Coastal Uplands",
-              "1c  Low Olympics",
-              "1d  Volcanics",
-              "1e  Outwash",
-              "1f  Willapa Hills",
-              "2a  Fraser Lowland",
-              "2b  Eastern Puget Riverine Lowlands",
-              "2c  San Juan Islands",
-              "2d  Olympic Rainshadow",
-              "2e  Eastern Puget Uplands",
-              "2f  Central Puget Lowland",
-              "2g  Southern Puget Prairies",
-              "2h  Cowlitz/Chehalis Foothills",
-              "2i  Cowlitz/Newaukum Prairie Floodplains",
-              "3a  Portland/Vancouver Basin",
-              "3d  Valley Foothills",
-              "4a  Western Cascades Lowlands and Valleys",
-              "4b  Western Cascades Montane Highlands",
-              "4c  Cascade Crest Montane Forest",
-              "4d  Cascade Subalpine/Alpine",
-              "77a  North Cascades Lowland Forests",
-              "77b  North Cascades Highland Forests",
-              "77i  High Olympics",
-              "9b  Grand Fir Mixed Forest",
-              "9c  Oak/Conifer Foothills"
-            ]
-        },
-        {
             "common": "Alaska-Cedar",
             "latin": "Chamaecyparis nootkatensis",
             "regions": [
