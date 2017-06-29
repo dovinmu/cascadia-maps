@@ -9,7 +9,7 @@ tree_regions = {}
 # the original tree object, lookup by tree name
 trees = {}
 
-sizes = {x:90, y:180, padding:10}
+sizes = {x:100, y:200, padding:3}
 
 overflow_limit = 25
 
@@ -32,27 +32,31 @@ disclaimer = []
 quote = []
 
 # set map name and description
+coords = projection([-123.2,49.2])
 mapTitle = svg.append('text')
-    .attr('x', (width/6))
-    .attr('y', (50))
+    .attr('x', coords[0])
+    .attr('y', coords[1])
     .attr('class', 'mapname')
     .text('Washington state evergreens')
+coords = projection([-123.14,49.1])
 mapDescription = svg.append('text')
-    .attr('x', (width/6 + 10))
-    .attr('y', (75))
+    .attr('x', coords[0])
+    .attr('y', coords[1])
     .attr('class', 'selected detail')
     .text('Click on an ecoregion to see the list of evergreen trees native to it.')
 
 #ecoregion name display
+coords = projection([-116.9, 49.1])
 treeMenuText = svg.append('text')
-.attr('x', (width - width/4.5))
-.attr('y', (70))
+.attr('x', coords[0])
+.attr('y', coords[1])
 .attr('class', 'selected title')
 .text('')
 
+coords = projection([-116.9, 49])
 treeMenuOverflowText = svg.append('text')
-.attr('x', (width - width/4.5))
-.attr('y', (90))
+.attr('x', coords[0])
+.attr('y', coords[1])
 .attr('class', 'selected title')
 .text('')
 
@@ -71,25 +75,33 @@ initMap = (error, ecotopo) ->
     .attr('d', path)
     .style('fill', getColor)
 
+    coords = projection([-121,48.75])
     mountainLabel = svg.append("text")
-    .attr("x", (width/3))
-    .attr("y", (height/8))
+    .attr("x", coords[0])
+    .attr("y", coords[1])
     .attr("class", "label")
     .text("Northwestern Forested Mountains")
+
+    coords = projection([-120.5,46.8])
     desertLabel = svg.append("text")
-    .attr("x", (width/2.3))
-    .attr("y", (height/2.2))
+    .attr("x", coords[0])
+    .attr("y", coords[1])
     .attr("class", "label")
     .text("North American Deserts")
+
+    coords = projection([-124.5,47.9])
     marineLabel = svg.append("text")
-    .attr("x", (width/20))
-    .attr("y", (height/3.5))
+    .attr("x", coords[0])
+    .attr("y", coords[1])
     .attr("class", "label")
     .text("Marine West Coast Forest")
 
+    coords = projection([-116.9,48.95])
+    diff = projection([-122,47])[1] - projection([-122,47.08])[1]
+    console.log coords[1], diff
     disclaimer.push(svg.append("text")
-        .attr("x", (width - width/4.5))
-        .attr("y", (110) + i*20)
+        .attr("x", coords[0])
+        .attr("y", coords[1] + i * diff)
         .attr("class", "detail")
         .style('opacity', 0)
         .text(line)) for line,i in ["Tree ranges are based on the data ",
@@ -97,8 +109,8 @@ initMap = (error, ecotopo) ->
                                     "accurate."
                                    ]
     quote.push(svg.append("text")
-        .attr("x", (width - width/4.5))
-        .attr("y", (110) + i*20)
+        .attr("x", coords[0])
+        .attr("y", coords[1] + i * diff)
         .attr("class", "quote")
         .style('opacity', 0)
         .text(line)) for line,i in ["A tree is beautiful, but what’s more, it has a right ",
@@ -175,14 +187,11 @@ onClickEco = (d, i) ->
 showImage = (name, i) ->
     id = getClassNameTree(name)
     fname = id + ".jpg"
-    # console.log "appending " + fname, i
-    y = 100 + (i//3) * (sizes.y + sizes.padding)
-    if i % 3 == 0
-      x = width - 3 * (sizes.x + sizes.padding)
-    if i % 3 == 1
-      x = width - 2 * (sizes.x + sizes.padding)
-    if i % 3 == 2
-      x = width - 1 * (sizes.x + sizes.padding)
+    startCoords = projection([-116.95,48.95])
+    stride = [sizes.x + sizes.padding, sizes.y + sizes.padding]
+    y = startCoords[1] + (i//3) * stride[1]
+    x = startCoords[0] + (i % 3) * stride[0]
+
     svg.append("svg:image")
       .attr("xlink:href", "images/" + fname)
       .attr("x", x)
