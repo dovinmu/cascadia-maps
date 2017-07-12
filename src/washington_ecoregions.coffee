@@ -1,5 +1,16 @@
-width = 1350
-height = 1160
+
+# width = $(window).width()
+# height = $(window).height()
+#
+# if width < 660
+#     screenSize = 'phone'
+#     scaling = 7500 * (width / 1100)
+# else
+#     screenSize = 'normal'
+#     scaling = 7500 * (width / 1350)
+
+# TODO: make map div work
+
 selected = null
 selectedTree = null
 # lookup list of trees given a region
@@ -13,14 +24,26 @@ sizes = {x:100, y:200, padding:3}
 
 overflow_limit = 25
 
-# setup projection
-svg = d3.select('body').append('svg')
+# define initial width and height-to-width ratio
+margin = { top: 10, left: 10, bottom: 10, right: 10 }
+width = parseInt(d3.select('#map').style('width'))
+width = width - margin.left - margin.right
+mapRatio = .55
+height = width * mapRatio
+console.log "width, height:", width, height
+
+svg = d3.select('#map').append('svg')
     .attr('width', width)
     .attr('height', height)
+    .attr('id', 'svg')
+
+
+# setup projection
 projection = d3.geo.mercator()
-    .scale(7500)
-    .center([-121.5, 46.5])
-    .translate([width/3, height/2])
+    .scale(width * 5)
+    .center([-120.5, 47.75])
+    .translate([width / 2, height / 2])
+
 path = d3.geo.path().projection(projection)
 
 # map labels
@@ -32,7 +55,7 @@ disclaimer = []
 quote = []
 
 # set map name and description
-coords = projection([-123.2,49.2])
+coords = projection([-123.2, 49.2])
 mapTitle = svg.append('text')
     .attr('x', coords[0])
     .attr('y', coords[1])
@@ -68,56 +91,55 @@ initMap = (error, ecotopo) ->
     data = topojson.feature(ecotopo, ecotopo.objects.ecoregions)
     #add level 4 ecosystems
     svg.selectAll('.subunit')
-    .data(data.features).enter()
-    .append('path')
-    .attr('class', getClassNameEco)
-    .on('click', onClickEco)
-    .attr('d', path)
-    .style('fill', getColor)
+      .data(data.features).enter()
+      .append('path')
+      .attr('class', getClassNameEco)
+      .on('click', onClickEco)
+      .attr('d', path)
+      .style('fill', getColor)
 
     coords = projection([-121,48.75])
     mountainLabel = svg.append("text")
-    .attr("x", coords[0])
-    .attr("y", coords[1])
-    .attr("class", "label")
-    .text("Northwestern Forested Mountains")
+      .attr("x", coords[0])
+      .attr("y", coords[1])
+      .attr("class", "label")
+      .text("Northwestern Forested Mountains")
 
     coords = projection([-120.5,46.8])
     desertLabel = svg.append("text")
-    .attr("x", coords[0])
-    .attr("y", coords[1])
-    .attr("class", "label")
-    .text("North American Deserts")
+      .attr("x", coords[0])
+      .attr("y", coords[1])
+      .attr("class", "label")
+      .text("North American Deserts")
 
     coords = projection([-124.5,47.9])
     marineLabel = svg.append("text")
-    .attr("x", coords[0])
-    .attr("y", coords[1])
-    .attr("class", "label")
-    .text("Marine West Coast Forest")
+      .attr("x", coords[0])
+      .attr("y", coords[1])
+      .attr("class", "label")
+      .text("Marine West Coast Forest")
 
     coords = projection([-116.9,48.95])
     diff = projection([-122,47])[1] - projection([-122,47.08])[1]
-    console.log coords[1], diff
     disclaimer.push(svg.append("text")
-        .attr("x", coords[0])
-        .attr("y", coords[1] + i * diff)
-        .attr("class", "detail")
-        .style('opacity', 0)
-        .text(line)) for line,i in ["Tree ranges are based on the data ",
-                                    "available and not guaranteed to be",
-                                    "accurate."
-                                   ]
+      .attr("x", coords[0])
+      .attr("y", coords[1] + i * diff)
+      .attr("class", "detail")
+      .style('opacity', 0)
+      .text(line)) for line,i in ["Tree ranges are based on the data ",
+                                  "available and not guaranteed to be",
+                                  "accurate."
+                                 ]
     quote.push(svg.append("text")
-        .attr("x", coords[0])
-        .attr("y", coords[1] + i * diff)
-        .attr("class", "quote")
-        .style('opacity', 0)
-        .text(line)) for line,i in ["A tree is beautiful, but what’s more, it has a right ",
-                                    "to life; like water, the sun and the stars, it is ",
-                                    "essential. Life on earth is inconceivable without trees.",
-                                    " - Chekov"
-                                   ]
+      .attr("x", coords[0])
+      .attr("y", coords[1] + i * diff)
+      .attr("class", "quote")
+      .style('opacity', 0)
+      .text(line)) for line,i in ["A tree is beautiful, but what’s more, it has a right ",
+                                  "to life; like water, the sun and the stars, it is ",
+                                  "essential. Life on earth is inconceivable without trees.",
+                                  " - Chekov"
+                                 ]
 
     region_trees[path.id] = [] for path in data.features
     loadJson('trees.wa.json')
@@ -353,5 +375,24 @@ hideTreeMenuText = () ->
         .transition().duration(50)
         .style('opacity', 0) for line in quote
 
+resize = () ->
+    width = parseInt(d3.select('#map').style('width'))
+    width = width - margin.left - margin.right
+    height = width * mapRatio
+    # update projection
+    projection
+        .translate([width / 2, height / 2])
+        .scale(width * 5)
+    path = d3.geo.path().projection(projection)
+    # resize the map container
+    # map
+    #   .style('width', width + 'px')
+    #   .style('height', height + 'px');
+
+    # resize the map
+    svg.selectAll('.subunit').attr('d', path);
+    # svg.selectAll('.state').attr('d', path);
+
 d3.json("washington.topojson", initMap)
+d3.select(window).on('resize', resize)
 # setTreeMenuText('', 'Click on an ecological subregion to see its name.')
