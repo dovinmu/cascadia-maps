@@ -1,5 +1,5 @@
-selected = null
-selectedTree = null
+
+selected = selectedTree = currentTreeId = null
 # lookup list of trees given a region
 region_trees = {}
 # lookup list of regions given a tree
@@ -7,7 +7,7 @@ tree_regions = {}
 # the original tree object, lookup by tree name
 trees = {}
 
-sizes = { x: 100, y: 200, padding: 3 }
+sizes = { x: 100, y: 180, padding: 3 }
 
 overflow_limit = 25
 
@@ -19,6 +19,7 @@ portrait = false
 mapTitle = mapDescription = treeMenuText = treeMenuOverflowText = marineLabel = mountainLabel = desertLabel = null
 disclaimer = []
 quote = []
+treeMenuLat = treeMenuLon = 0
 
 svg = d3.select('#map').append('svg')
     .attr('id', 'svg')
@@ -29,13 +30,15 @@ makeProjection = () ->
     if portrait
         scaling = 7
         xTrans = width / 1.8
+        yTrans = height / 3.5
     else
         scaling = 5
         xTrans = width / 2.4
+        yTrans = width / 4.5
     projection = d3.geo.mercator()
         .scale(width * scaling)
         .center([-120.5, 47.75])
-        .translate([xTrans, height / 2.4])
+        .translate([xTrans, yTrans])
 
     path = d3.geo.path().projection(projection)
 
@@ -115,14 +118,14 @@ positionText = () ->
 
     #Tree menu
     if portrait
-        lat = 45.4
-        lon = -124
+        treeMenuLat = 45.8
+        treeMenuLon = -125
     else
-        lat = 49.1
-        lon = -116.9
-    coordsText = projection([lon, lat])
-    coordsOverflow = projection([lon, lat - 0.1])
-    coordsParagraph = projection([lon, lat - 0.15])
+        treeMenuLat = 49.1
+        treeMenuLon = -116.9
+    coordsText = projection([treeMenuLon, treeMenuLat])
+    coordsOverflow = projection([treeMenuLon, treeMenuLat - 0.1])
+    coordsParagraph = projection([treeMenuLon, treeMenuLat - 0.15])
     diff = projection([-122,47])[1] - projection([-122,47.08])[1]
     treeMenuText
         .attr('x', coordsText[0])
@@ -196,32 +199,43 @@ onClickTree = (d, i) ->
     description = trees[selectedTree.id]['latin']
     setTitleAndDescription(name, description)
 
-onClickEco = (d, i) ->
+onClickEco = (d) ->
     hideTreeMenuText()
     if selected
-        selected.style('stroke', 'none')
-    if selectedTree
+      selected.style('stroke', 'none')
+      if selectedTree
         region_list = tree_regions[selectedTree.id]
         d3.selectAll('.subunit').style('opacity', '1') for region in region_list
         selectedTree = null
-        setTitleAndDescription('Washington state trees', 'Click on an ecoregion to see the list of trees native to it.')
+        setTitleAndDescription('Washington state evergreens', 'Click on an ecoregion to see the list of trees native to it.')
         showLabels()
-    removeImages()
     selected = d3.select(this)
     selected.style('stroke', 'red')
-    tree_list = region_trees[d.id]
-    # setTreeMenuText(d.id.split(' ')[2..].join(' '), tree_list.join(', '))
-    setTreeMenuText(d.id.split(' ')[2..].join(' '))
-    yOffset = 0
+    drawTreeMenu(d.id)
+
+drawTreeMenu = (treeId, selected) ->
+    currentTreeId = treeId
+    removeImages()
+    if not treeId
+        return
+    tree_list = region_trees[treeId]
+    setTreeMenuText(treeId.split(' ')[2..].join(' '))
     showImage tree,i for tree,i in tree_list
 
 showImage = (name, i) ->
     id = getClassNameTree(name)
     fname = id + ".jpg"
-    startCoords = projection([-116.95,48.95])
+
+    startCoords = projection([treeMenuLon, treeMenuLat - 0.2])
     stride = [sizes.x + sizes.padding, sizes.y + sizes.padding]
-    y = startCoords[1] + (i//3) * stride[1]
-    x = startCoords[0] + (i % 3) * stride[0]
+    if portrait
+        horizontalCount = (width) // stride[0]
+    else
+        horizontalCount = 3 # TODO: actually compute this
+    console.log "we can fit", horizontalCount, "trees"
+
+    y = startCoords[1] + (i // horizontalCount) * stride[1]
+    x = startCoords[0] + (i % horizontalCount) * stride[0]
 
     svg.append("svg:image")
       .attr("xlink:href", "images/" + fname)
@@ -392,21 +406,16 @@ resize = () ->
 
     mapRatio = .55
     portrait = false
+    height = width * mapRatio
     if bodyHeight > width
-        # mapRatio = 1 / mapRatio
         mapRatio = width / bodyHeight
         portrait = true
-        console.log "portrait mode"
-    height = width * mapRatio
+        height = $(window).height()
     console.log "width, height:", width, height
 
     # update projection
     makeProjection()
-    # projection
-    #     .translate([width / 2.5, height / 2.4])
-    #     .scale(width * 5)
-    # console.log projection.invert([0,0])
-    # path = d3.geo.path().projection(projection)
+
     # resize the map container
     svg
       .style('width', width + 'px')
@@ -416,6 +425,7 @@ resize = () ->
     svg.selectAll('.subunit').attr('d', path);
     # svg.selectAll('.state').attr('d', path);
     positionText()
+    drawTreeMenu(currentTreeId)
 
 d3.json("washington.topojson", initMap)
 d3.select(window).on('resize', resize)
