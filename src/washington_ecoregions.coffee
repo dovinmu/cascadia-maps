@@ -107,11 +107,17 @@ initMap = (error, ecotopo) ->
 
 positionText = () ->
     # Title
-    coords = projection([-123.2, 49.2])
+    if portrait
+        titleLat =  49.2
+        titleLon = -124.2
+    else
+        titleLat =  49.2
+        titleLon = -123.2
+    coords = projection([titleLon, titleLat])
     mapTitle
         .attr('x', coords[0])
         .attr('y', coords[1])
-    coords = projection([-123.14,49.1])
+    coords = projection([titleLon - 0.06, titleLat - 0.1])
     mapDescription
         .attr('x', coords[0])
         .attr('y', coords[1])
