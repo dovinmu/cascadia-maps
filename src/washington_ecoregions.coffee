@@ -114,7 +114,7 @@ positionText = () ->
     mapTitle
         .attr('x', coords[0])
         .attr('y', coords[1])
-        .style('font-size', if tinymode then '22px' else '50px')
+        .style('font-size', if tinymode then '24px' else '50px')
     if tinymode
         mapTitle.text('Washington evergreens')
     coords = projection([titleLon + 0.08, titleLat - 0.13])
@@ -431,10 +431,9 @@ hideTreeMenuText = () ->
         .style('opacity', 0) for line in quote
 
 resize = () ->
-    # console.log "$(window).width()",$(window).width()
-    # console.log "window.innerWidth", window.innerWidth
     smallmode = tinymode = false
     portrait = false
+
     # define initial width and height-to-width ratio
     margin = { top: 10, left: 10, bottom: 10, right: 10 }
     width = $(window).width()
@@ -445,15 +444,12 @@ resize = () ->
     height = width * mapRatio
     if width < 1000
       smallmode = true
-      console.log "smallmode"
-    if width < 500
+    if width < 800
       tinymode = true
-      console.log "tinymode"
     if bodyHeight > width or tinymode
         mapRatio = width / bodyHeight
         portrait = true
         height = $(window).height()
-
     if portrait
         overflow_limit = 32
     else
@@ -462,7 +458,9 @@ resize = () ->
     # update projection
     makeProjection()
 
-    # resize the map container
+    # resize the map container, making sure not to cut off any of the map
+    stateBottom = projection([-122, 45.5])[1]
+    height = Math.max(height, stateBottom)
     svg
       .style('width', width + 'px')
       .style('height', height + 'px');
