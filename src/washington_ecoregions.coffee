@@ -56,10 +56,10 @@ initMap = (error, ecotopo) ->
     # Title
     mapTitle = svg.append('text')
       .attr('class', 'mapname')
-      .text('Washington state evergreens')
+      .text('Evergreens of Washington')
     mapDescription = svg.append('text')
       .attr('class', 'selected detail')
-      .text('Click on an ecoregion to see the list of evergreen trees native to it.')
+      .text('Select an ecoregion to see the list of evergreen trees native to it.')
 
     # Tree menu
     treeMenuText = svg.append('text')
@@ -114,14 +114,12 @@ positionText = () ->
     mapTitle
         .attr('x', coords[0])
         .attr('y', coords[1])
-        .style('font-size', if tinymode then '24px' else '50px')
-    if tinymode
-        mapTitle.text('Washington evergreens')
-    coords = projection([titleLon + 0.08, titleLat - 0.13])
+        .style('font-size', if tinymode then '23px' else '50px')
+    coords = projection([titleLon + 0.05, titleLat - 0.13])
     mapDescription
         .attr('x', coords[0])
         .attr('y', coords[1])
-        .attr('opacity', if tinymode then 0 else 1)
+        .style('font-size', if tinymode then '10px' else '13px')
 
     #Tree menu
     if portrait
@@ -226,7 +224,7 @@ onClickEco = (d) ->
         region_list = tree_regions[selectedTree.id]
         d3.selectAll('.subunit').style('opacity', '1') for region in region_list
         selectedTree = null
-        setTitleAndDescription('Washington state evergreens', 'Click on an ecoregion to see the list of trees native to it.')
+        setTitleAndDescription('Washington state evergreens', 'Select an ecoregion to see the list of trees native to it.')
         showLabels()
     selected = d3.select(this)
     selected.style('stroke', 'red')
@@ -370,8 +368,6 @@ setTreeMenuText = (text, detailText) ->
         .style('opacity', 1)
         .text(overflow)
 
-    # if not detailText
-        # TODO: iterate over array of text lines until they're all cleared.
     if detailText
         split = splitText(detailText)
     # TODO: array of text lines that handle overflow properly, iteratively calling splitText
@@ -474,4 +470,3 @@ resize = () ->
 
 d3.json("washington.topojson", initMap)
 d3.select(window).on('resize', resize)
-# setTreeMenuText('', 'Click on an ecological subregion to see its name.')
