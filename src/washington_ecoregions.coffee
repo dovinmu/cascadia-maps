@@ -1,7 +1,5 @@
-width = 1350
-height = 1160
-selected = null
-selectedTree = null
+
+selected = selectedTree = currentTreeId = null
 # lookup list of trees given a region
 region_trees = {}
 # lookup list of regions given a tree
@@ -9,52 +7,36 @@ tree_regions = {}
 # the original tree object, lookup by tree name
 trees = {}
 
-sizes = {x:90, y:180, padding:10}
+sizes = { x: 90, y: 162, padding: 2 }
 
 overflow_limit = 25
 
-# setup projection
-svg = d3.select('body').append('svg')
-    .attr('width', width)
-    .attr('height', height)
-projection = d3.geo.mercator()
-    .scale(7500)
-    .center([-121.5, 46.5])
-    .translate([width/3, height/2])
-path = d3.geo.path().projection(projection)
+width = height = 0
 
-# map labels
-marineLabel = null
-mountainLabel = null
-desertLabel = null
-
+# map labels and text
+mapTitle = mapDescription = treeMenuText = treeMenuOverflowText = marineLabel = mountainLabel = desertLabel = null
 disclaimer = []
 quote = []
+treeMenuLat = treeMenuLon = 0
 
-# set map name and description
-mapTitle = svg.append('text')
-    .attr('x', (width/6))
-    .attr('y', (50))
-    .attr('class', 'mapname')
-    .text('Washington state evergreens')
-mapDescription = svg.append('text')
-    .attr('x', (width/6 + 10))
-    .attr('y', (75))
-    .attr('class', 'selected detail')
-    .text('Click on an ecoregion to see the list of evergreen trees native to it.')
+smallmode = tinymode = false
+portrait = false
 
-#ecoregion name display
-treeMenuText = svg.append('text')
-.attr('x', (width - width/4.5))
-.attr('y', (70))
-.attr('class', 'selected title')
-.text('')
+svg = d3.select('#map').append('svg')
+    .attr('id', 'svg')
 
-treeMenuOverflowText = svg.append('text')
-.attr('x', (width - width/4.5))
-.attr('y', (90))
-.attr('class', 'selected title')
-.text('')
+# setup projection
+projection = path = null
+makeProjection = () ->
+    if portrait
+        scaling = 7
+    else
+        scaling = 5
+    projection = d3.geo.mercator()
+        .scale(width * scaling)
+        .center([-124.75, 49.5])
+        .translate([0,0]) # Translate so the geo coordinates are in the top-left of the screen
+    path = d3.geo.path().projection(projection)
 
 $("#disclaimer").click(() -> showDisclaimer())
 
@@ -64,52 +46,142 @@ initMap = (error, ecotopo) ->
     data = topojson.feature(ecotopo, ecotopo.objects.ecoregions)
     #add level 4 ecosystems
     svg.selectAll('.subunit')
-    .data(data.features).enter()
-    .append('path')
-    .attr('class', getClassNameEco)
-    .on('click', onClickEco)
-    .attr('d', path)
-    .style('fill', getColor)
+      .data(data.features).enter()
+      .append('path')
+      .attr('class', getClassNameEco)
+      .on('click', onClickEco)
+      .attr('d', path)
+      .style('fill', getColor)
 
-    mountainLabel = svg.append("text")
-    .attr("x", (width/3))
-    .attr("y", (height/8))
-    .attr("class", "label")
-    .text("Northwestern Forested Mountains")
-    desertLabel = svg.append("text")
-    .attr("x", (width/2.3))
-    .attr("y", (height/2.2))
-    .attr("class", "label")
-    .text("North American Deserts")
-    marineLabel = svg.append("text")
-    .attr("x", (width/20))
-    .attr("y", (height/3.5))
-    .attr("class", "label")
-    .text("Marine West Coast Forest")
+    # Title
+    mapTitle = svg.append('text')
+      .attr('class', 'mapname')
+      .text('Washington state evergreens')
+    mapDescription = svg.append('text')
+      .attr('class', 'selected detail')
+      .text('Click on an ecoregion to see the list of evergreen trees native to it.')
 
+    # Tree menu
+    treeMenuText = svg.append('text')
+      .attr('class', 'selected title')
+      .text('')
+    treeMenuOverflowText = svg.append('text')
+      .attr('class', 'selected title')
+      .text('')
     disclaimer.push(svg.append("text")
-        .attr("x", (width - width/4.5))
-        .attr("y", (110) + i*20)
-        .attr("class", "detail")
-        .style('opacity', 0)
-        .text(line)) for line,i in ["Tree ranges are based on the data ",
-                                    "available and not guaranteed to be",
-                                    "accurate."
-                                   ]
+      .attr("class", "detail")
+      .style('opacity', 0)
+      .text(line)) for line,i in ["Tree ranges are based on the data ",
+                                  "available and not guaranteed to be",
+                                  "accurate."
+                                 ]
     quote.push(svg.append("text")
-        .attr("x", (width - width/4.5))
-        .attr("y", (110) + i*20)
-        .attr("class", "quote")
-        .style('opacity', 0)
-        .text(line)) for line,i in ["A tree is beautiful, but what’s more, it has a right ",
-                                    "to life; like water, the sun and the stars, it is ",
-                                    "essential. Life on earth is inconceivable without trees.",
-                                    " - Chekov"
-                                   ]
+      .attr("class", "quote")
+      .style('opacity', 0)
+      .text(line)) for line,i in ["A tree is beautiful, but what’s more, it has a right ",
+                                  "to life; like water, the sun and the stars, it is ",
+                                  "essential. Life on earth is inconceivable without trees.",
+                                  " - Chekov"
+                                 ]
+
+    # Map labels
+    mountainLabel = svg.append("text")
+      .attr("class", "label")
+      .text("Northwestern Forested Mountains")
+    desertLabel = svg.append("text")
+      .attr("class", "label")
+      .text("North American Deserts")
+    marineLabel = svg.append("text")
+      .attr("class", "label")
+      .text("Marine West Coast Forest")
 
     region_trees[path.id] = [] for path in data.features
     loadJson('trees.wa.json')
+    resize()
+    positionText()
     showQuote()
+
+positionText = () ->
+    # Title
+    if portrait
+        titleLat =  49.2
+        titleLon = -124.2
+    else
+        titleLat =  49.2
+        titleLon = -123.2
+
+    coords = projection([titleLon, titleLat])
+    mapTitle
+        .attr('x', coords[0])
+        .attr('y', coords[1])
+        .style('font-size', if tinymode then '22px' else '50px')
+    if tinymode
+        mapTitle.text('Washington evergreens')
+    coords = projection([titleLon + 0.08, titleLat - 0.13])
+    mapDescription
+        .attr('x', coords[0])
+        .attr('y', coords[1])
+        .attr('opacity', if tinymode then 0 else 1)
+
+    #Tree menu
+    if portrait
+        treeMenuLat = 45.33
+        treeMenuLon = -124.7
+    else
+        treeMenuLat = 49
+        treeMenuLon = -116.9
+    diff = projection.invert([0, 0])[1] - projection.invert([0, 18])[1]
+    coordsText = projection([treeMenuLon, treeMenuLat - diff])
+    coordsOverflow = projection([treeMenuLon, treeMenuLat - diff * 2])
+    coordsParagraph = projection([treeMenuLon, treeMenuLat - 0.15])
+    diff = 12
+    treeMenuText
+        # .style("font-size", if tinymode then '16px' else '20px')
+        .style("font-size", '18px')
+        .attr('x', coordsText[0])
+        .attr('y', coordsText[1])
+    treeMenuOverflowText
+        # .style("font-size", if tinymode then '16px' else '20px')
+        .style("font-size", '18px')
+        .attr('x', coordsOverflow[0])
+        .attr('y', coordsOverflow[1])
+    line
+        .style("font-size", if tinymode then '10px' else '11px')
+        .attr("x", coordsParagraph[0])
+        .attr("y", coordsParagraph[1] + (i+2) * diff) for line,i in disclaimer
+    line
+        .style("font-size", if tinymode then '10px' else '11px')
+        .attr("x", coordsParagraph[0])
+        .attr("y", coordsParagraph[1] + i * diff) for line,i in quote
+
+    # Map labels
+    coords = projection([-121.5,48.75])
+    mountainLabel
+      .attr("x", coords[0])
+      .attr("y", coords[1])
+
+    coords = projection([-120.5,46.8])
+    desertLabel
+      .attr("x", coords[0])
+      .attr("y", coords[1])
+
+    coords = projection([-124.5,47.9])
+    marineLabel
+      .attr("x", coords[0])
+      .attr("y", coords[1])
+
+    if smallmode
+      marineLabel.text("")
+      desertLabel.text("")
+      mountainLabel.text("")
+
+    d3.select('#info')
+        .style('visibility', 'visible')
+    if tinymode
+        d3.select('#info')
+            .style('padding', '4px')
+            .style('font-size', '8px')
+        console.log "changed"
 
 # create lists of regions <==> trees
 processTree = (tree) ->
@@ -126,7 +198,7 @@ loadJson = (fname) ->
     fetch(fname, {method:'get'})
         .then((response) -> response.json())
         .then((json) -> processTree tree for tree in json["evergreen"])
-        .then(() -> console.log region_trees)
+        # .then(() -> console.log region_trees)
         .catch((e) ->
           console.log "FLAGRANT ERROR:", e
         )
@@ -153,36 +225,58 @@ onClickTree = (d, i) ->
     description = trees[selectedTree.id]['latin']
     setTitleAndDescription(name, description)
 
-onClickEco = (d, i) ->
+onClickEco = (d) ->
     hideTreeMenuText()
     if selected
-        selected.style('stroke', 'none')
-    if selectedTree
+      selected.style('stroke', 'none')
+      if selectedTree
         region_list = tree_regions[selectedTree.id]
         d3.selectAll('.subunit').style('opacity', '1') for region in region_list
         selectedTree = null
-        setTitleAndDescription('Washington state trees', 'Click on an ecoregion to see the list of trees native to it.')
+        setTitleAndDescription('Washington state evergreens', 'Click on an ecoregion to see the list of trees native to it.')
         showLabels()
-    removeImages()
     selected = d3.select(this)
     selected.style('stroke', 'red')
-    tree_list = region_trees[d.id]
-    # setTreeMenuText(d.id.split(' ')[2..].join(' '), tree_list.join(', '))
-    setTreeMenuText(d.id.split(' ')[2..].join(' '))
-    yOffset = 0
-    showImage tree,i for tree,i in tree_list
+    drawTreeMenu(d.id)
 
-showImage = (name, i) ->
+drawTreeMenu = (treeId, selected) ->
+    currentTreeId = treeId
+    removeImages()
+    if not treeId
+        return
+    tree_list = region_trees[treeId]
+    setTreeMenuText(treeId.split(' ')[2..].join(' '))
+    grid = getTreeGrid(tree_list.length)
+    showImage tree,i,grid for tree,i in tree_list
+
+    bottom = grid.startCoords[1] + grid.rows * grid.stride.y + 15
+    stateBottom = projection([-122, 45.5])[1]
+    bottom = Math.max(bottom, stateBottom)
+    svg
+      .style('width', width + 'px')
+      .style('height', bottom + 'px')
+    console.log "resized to", width, bottom
+
+getTreeGrid = (n_trees) ->
+    diff = projection.invert([0, 0])[1] - projection.invert([0, 40])[1]
+    startCoords = projection([treeMenuLon, treeMenuLat - diff])
+
+    stride = {x: sizes.x + sizes.padding, y: sizes.y + sizes.padding}
+    if portrait
+        columns = (width) // stride.x
+    else
+        columns = 3 # TODO: maybe actually compute this
+    # console.log "we can fit", horizontalCount, "trees"
+    rows = Math.ceil(n_trees / columns)
+    return { columns: columns, rows: rows, stride: stride, startCoords: startCoords }
+
+showImage = (name, i, grid) ->
     id = getClassNameTree(name)
     fname = id + ".jpg"
-    # console.log "appending " + fname, i
-    y = 100 + (i//3) * (sizes.y + sizes.padding)
-    if i % 3 == 0
-      x = width - 3 * (sizes.x + sizes.padding)
-    if i % 3 == 1
-      x = width - 2 * (sizes.x + sizes.padding)
-    if i % 3 == 2
-      x = width - 1 * (sizes.x + sizes.padding)
+
+    x = grid.startCoords[0] + (i % grid.columns) * grid.stride.x
+    y = grid.startCoords[1] + (i // grid.columns) * grid.stride.y
+
     svg.append("svg:image")
       .attr("xlink:href", "images/" + fname)
       .attr("x", x)
@@ -325,12 +419,12 @@ showQuote = () ->
     line
         .transition().duration(50)
         .style('opacity', 1) for line in quote
-    console.log "HI"
 
 
 
 showDisclaimer = () ->
     removeImages()
+    hideTreeMenuText()
     setTreeMenuText("Disclaimer")
     line
         .transition().duration(50)
@@ -344,5 +438,51 @@ hideTreeMenuText = () ->
         .transition().duration(50)
         .style('opacity', 0) for line in quote
 
+resize = () ->
+    smallmode = tinymode = false
+    portrait = false
+    # define initial width and height-to-width ratio
+    margin = { top: 10, left: 10, bottom: 10, right: 10 }
+    width = parseInt(d3.select('#map').style('width'))
+    width = width - margin.left - margin.right
+    bodyHeight = $(window).height()
+
+    mapRatio = .55
+    height = width * mapRatio
+    if width < 1000
+      smallmode = true
+      console.log "smallmode"
+    if width < 500
+      tinymode = true
+      console.log "tinymode"
+    if bodyHeight > width or tinymode
+        mapRatio = width / bodyHeight
+        portrait = true
+        height = $(window).height()
+
+    if portrait
+        overflow_limit = 32
+    else
+        overflow_limit = 25
+
+    console.log "width, height:", width, height
+
+    # update projection
+    makeProjection()
+
+    # resize the map container
+    # TODO: compute overflow if scrolling is necessary
+    svg
+      .style('width', width + 'px')
+      .style('height', height + 'px');
+    console.log "resized to", width, height
+
+    # resize the map
+    svg.selectAll('.subunit').attr('d', path);
+    # svg.selectAll('.state').attr('d', path);
+    positionText()
+    drawTreeMenu(currentTreeId)
+
 d3.json("washington.topojson", initMap)
+d3.select(window).on('resize', resize)
 # setTreeMenuText('', 'Click on an ecological subregion to see its name.')

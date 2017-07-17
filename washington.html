@@ -36,15 +36,17 @@ text.selected.detail {
 #info {
   font-family: sans-serif;
   font-size: 11px;
-  position: absolute;
+  position: fixed;
   bottom: 5px;
-  background-color: rgba(255,255,255,0.8);
+  background-color: rgba(230,230,210,0.5);
   border-radius: 3px;
   right: 10px;
   padding: 10px;
+  visibility: hidden;
 }
 </style>
 <body>
+  <div id="map"></div>
   <script src="lib/jquery.min.js" charset="utf-8"></script>
   <script src="lib/d3.min.js" charset="utf-8"></script>
   <script src="lib/topojson.v1.min.js"></script>
