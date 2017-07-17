@@ -69,7 +69,7 @@ initMap = (error, ecotopo) ->
       .attr('class', 'selected title')
       .text('')
     disclaimer.push(svg.append("text")
-      .attr("class", "detail")
+      .attr("class", "disclaimer")
       .style('opacity', 0)
       .text(line)) for line,i in ["Tree ranges are based on the data ",
                                   "available and not guaranteed to be",
