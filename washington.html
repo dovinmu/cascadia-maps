@@ -1,50 +1,59 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
-text {
-    font-family: "Georgia";
-}
-text.mapname {
-    letter-spacing: 3px;
-    font-size: 50px;
-    font-variant: small-caps;
-}
-text.mapsubtitle {
-    font-size: 14px;
-}
-text.label {
-    font-size: 24px;
-    font-variant: small-caps;
-    font-weight: bold;
-}
-text.selected.title {
-    font-size: 18px;
-    font-variant: small-caps;
-}
-text.selected.detail {
-    font-size: 14px;
-}
+<head>
+    <title>Washington evergreens</title>
+    <meta name="viewport" content="width=device-width"/>
+    <meta charset="utf-8">
+    <style>
+    text {
+        font-family: "Georgia";
+    }
+    text.mapname {
+        letter-spacing: 3px;
+        font-size: 50px;
+        font-variant: small-caps;
+    }
+    text.mapsubtitle {
+        font-size: 14px;
+    }
+    text.label {
+        font-size: 24px;
+        font-variant: small-caps;
+        font-weight: bold;
+    }
+    text.selected.title {
+        font-size: 20px;
+        font-variant: small-caps;
+    }
+    text.selected.detail {
+        font-size: 14px;
+    }
 
-.subunit-label {
-    fill: #777;
-    fill-opacity: .5;
-    font: 10px arial, sans-serif;
-    font-weight: 300;
-    text-anchor: middle;
-}
+    text.quote {
+        font-size: 13px;
+        font-style: italic;
+    }
 
-#info {
-  font-family: sans-serif;
-  font-size: 11px;
-  position: fixed;
-  bottom: 5px;
-  background-color: rgba(230,230,210,0.5);
-  border-radius: 3px;
-  right: 10px;
-  padding: 10px;
-  visibility: hidden;
-}
-</style>
+    .subunit-label {
+        fill: #777;
+        fill-opacity: .5;
+        font: 10px arial, sans-serif;
+        font-weight: 300;
+        text-anchor: middle;
+    }
+
+    #info {
+      font-family: sans-serif;
+      font-size: 11px;
+      position: fixed;
+      bottom: 5px;
+      background-color: rgba(230,230,210,0.5);
+      border-radius: 3px;
+      right: 10px;
+      padding: 10px;
+      visibility: hidden;
+    }
+    </style>
+</head>
 <body>
   <div id="map"></div>
   <script src="lib/jquery.min.js" charset="utf-8"></script>

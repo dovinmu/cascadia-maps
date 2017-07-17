@@ -130,27 +130,21 @@ positionText = () ->
     else
         treeMenuLat = 49
         treeMenuLon = -116.9
-    diff = projection.invert([0, 0])[1] - projection.invert([0, 18])[1]
+    diff = projection.invert([0, 0])[1] - projection.invert([0, 22])[1]
     coordsText = projection([treeMenuLon, treeMenuLat - diff])
     coordsOverflow = projection([treeMenuLon, treeMenuLat - diff * 2])
     coordsParagraph = projection([treeMenuLon, treeMenuLat - 0.15])
     diff = 12
     treeMenuText
-        # .style("font-size", if tinymode then '16px' else '20px')
-        .style("font-size", '18px')
         .attr('x', coordsText[0])
         .attr('y', coordsText[1])
     treeMenuOverflowText
-        # .style("font-size", if tinymode then '16px' else '20px')
-        .style("font-size", '18px')
         .attr('x', coordsOverflow[0])
         .attr('y', coordsOverflow[1])
     line
-        .style("font-size", if tinymode then '10px' else '11px')
         .attr("x", coordsParagraph[0])
         .attr("y", coordsParagraph[1] + (i+2) * diff) for line,i in disclaimer
     line
-        .style("font-size", if tinymode then '10px' else '11px')
         .attr("x", coordsParagraph[0])
         .attr("y", coordsParagraph[1] + i * diff) for line,i in quote
 
@@ -180,8 +174,7 @@ positionText = () ->
     if tinymode
         d3.select('#info')
             .style('padding', '4px')
-            .style('font-size', '8px')
-        console.log "changed"
+            .style('font-size', '9px')
 
 # create lists of regions <==> trees
 processTree = (tree) ->
@@ -251,14 +244,13 @@ drawTreeMenu = (treeId, selected) ->
 
     bottom = grid.startCoords[1] + grid.rows * grid.stride.y + 15
     stateBottom = projection([-122, 45.5])[1]
-    bottom = Math.max(bottom, stateBottom)
+    bottom = Math.ceil(Math.max(bottom, stateBottom))
     svg
       .style('width', width + 'px')
       .style('height', bottom + 'px')
-    console.log "resized to", width, bottom
 
 getTreeGrid = (n_trees) ->
-    diff = projection.invert([0, 0])[1] - projection.invert([0, 40])[1]
+    diff = projection.invert([0, 0])[1] - projection.invert([0, 44])[1]
     startCoords = projection([treeMenuLon, treeMenuLat - diff])
 
     stride = {x: sizes.x + sizes.padding, y: sizes.y + sizes.padding}
@@ -439,11 +431,13 @@ hideTreeMenuText = () ->
         .style('opacity', 0) for line in quote
 
 resize = () ->
+    # console.log "$(window).width()",$(window).width()
+    # console.log "window.innerWidth", window.innerWidth
     smallmode = tinymode = false
     portrait = false
     # define initial width and height-to-width ratio
     margin = { top: 10, left: 10, bottom: 10, right: 10 }
-    width = parseInt(d3.select('#map').style('width'))
+    width = $(window).width()
     width = width - margin.left - margin.right
     bodyHeight = $(window).height()
 
@@ -465,13 +459,10 @@ resize = () ->
     else
         overflow_limit = 25
 
-    console.log "width, height:", width, height
-
     # update projection
     makeProjection()
 
     # resize the map container
-    # TODO: compute overflow if scrolling is necessary
     svg
       .style('width', width + 'px')
       .style('height', height + 'px');
