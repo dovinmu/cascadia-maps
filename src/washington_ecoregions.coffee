@@ -224,7 +224,7 @@ onClickEco = (d) ->
         region_list = tree_regions[selectedTree.id]
         d3.selectAll('.subunit').style('opacity', '1') for region in region_list
         selectedTree = null
-        setTitleAndDescription('Washington state evergreens', 'Select an ecoregion to see the list of trees native to it.')
+        setTitleAndDescription('Evergreens of Washington', 'Select an ecoregion to see the list of trees native to it.')
         showLabels()
     selected = d3.select(this)
     selected.style('stroke', 'red')
