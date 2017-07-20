@@ -119,7 +119,7 @@ positionText = () ->
     mapDescription
         .attr('x', coords[0])
         .attr('y', coords[1])
-        .style('font-size', if tinymode then '12px' else '13px')
+        .style('font-size', if tinymode then '12px' else '14px')
 
     #Tree menu
     if portrait
