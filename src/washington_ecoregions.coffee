@@ -163,9 +163,13 @@ positionText = () ->
       .attr("y", coords[1])
 
     if smallmode
-      marineLabel.text("")
-      desertLabel.text("")
-      mountainLabel.text("")
+        marineLabel.text("")
+        desertLabel.text("")
+        mountainLabel.text("")
+    else
+        mountainLabel.text("Northwestern Forested Mountains")
+        desertLabel.text("North American Deserts")
+        marineLabel.text("Marine West Coast Forest")
 
     d3.select('#info')
         .style('visibility', 'visible')
@@ -442,7 +446,7 @@ resize = () ->
 
     mapRatio = .55
     height = width * mapRatio
-    if width < 1000
+    if width < 1500
       smallmode = true
     if width < 800
       tinymode = true
