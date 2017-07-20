@@ -128,7 +128,7 @@ positionText = () ->
     else
         treeMenuLat = 49
         treeMenuLon = -116.9
-    diffHeader = projection.invert([0, 0])[1] - projection.invert([0, 15])[1]
+    diffHeader = projection.invert([0, 0])[1] - projection.invert([0, 19])[1]
     diffParagraph = 16
     coordsText = projection([treeMenuLon, treeMenuLat - diffHeader])
     coordsOverflow = projection([treeMenuLon, treeMenuLat - diffHeader * 2])
@@ -338,7 +338,6 @@ splitText = (text) ->
     return [result, split.join(' ')]
 
 setTitleAndDescription = (title, description) ->
-    console.log title, mapTitle.text()
     if mapTitle.text() != title
         mapTitle
             .transition().duration(50)
@@ -379,7 +378,7 @@ setTreeMenuText = (text, detailText) ->
     # until the last line is under the detail text overflow limit
 
 hideLabels = () ->
-    console.log "hide"
+    # console.log "hide"
     if not marineLabel or not desertLabel or not mountainLabel
         console.log "null"
         return
@@ -394,7 +393,7 @@ hideLabels = () ->
         .style('opacity', 0)
 
 showLabels = () ->
-    console.log "show"
+    # console.log "show"
     #add level 1 ecosystem labels
     mountainLabel
         .transition().duration(50)
