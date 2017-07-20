@@ -7,7 +7,7 @@ tree_regions = {}
 # the original tree object, lookup by tree name
 trees = {}
 
-sizes = { x: 90, y: 162, padding: 2 }
+sizes = { x: 90, y: 162, padding: 15 }
 
 overflow_limit = 25
 
@@ -34,7 +34,7 @@ makeProjection = () ->
         scaling = 5
     projection = d3.geo.mercator()
         .scale(width * scaling)
-        .center([-124.75, 49.5])
+        .center([-125, 49.55])
         .translate([0,0]) # Translate so the geo coordinates are in the top-left of the screen
     path = d3.geo.path().projection(projection)
 
@@ -81,7 +81,7 @@ initMap = (error, ecotopo) ->
       .text(line)) for line,i in ["A tree is beautiful, but what’s more, it has a right ",
                                   "to life; like water, the sun and the stars, it is ",
                                   "essential. Life on earth is inconceivable without trees.",
-                                  " - Chekov"
+                                  " - Anton Chekov"
                                  ]
 
     # Map labels
@@ -104,10 +104,10 @@ initMap = (error, ecotopo) ->
 positionText = () ->
     # Title
     if portrait
-        titleLat =  49.2
-        titleLon = -124.2
+        titleLat =  49.3
+        titleLon = -124.6
     else
-        titleLat =  49.2
+        titleLat =  49.3
         titleLon = -123.2
 
     coords = projection([titleLon, titleLat])
@@ -115,11 +115,11 @@ positionText = () ->
         .attr('x', coords[0])
         .attr('y', coords[1])
         .style('font-size', if tinymode then '23px' else '50px')
-    coords = projection([titleLon + 0.05, titleLat - 0.13])
+    coords = projection([titleLon + 0.05, titleLat - 0.18])
     mapDescription
         .attr('x', coords[0])
         .attr('y', coords[1])
-        .style('font-size', if tinymode then '10px' else '13px')
+        .style('font-size', if tinymode then '12px' else '13px')
 
     #Tree menu
     if portrait
@@ -128,11 +128,11 @@ positionText = () ->
     else
         treeMenuLat = 49
         treeMenuLon = -116.9
-    diff = projection.invert([0, 0])[1] - projection.invert([0, 22])[1]
-    coordsText = projection([treeMenuLon, treeMenuLat - diff])
-    coordsOverflow = projection([treeMenuLon, treeMenuLat - diff * 2])
+    diffHeader = projection.invert([0, 0])[1] - projection.invert([0, 15])[1]
+    diffParagraph = 16
+    coordsText = projection([treeMenuLon, treeMenuLat - diffHeader])
+    coordsOverflow = projection([treeMenuLon, treeMenuLat - diffHeader * 2])
     coordsParagraph = projection([treeMenuLon, treeMenuLat - 0.15])
-    diff = 12
     treeMenuText
         .attr('x', coordsText[0])
         .attr('y', coordsText[1])
@@ -141,10 +141,10 @@ positionText = () ->
         .attr('y', coordsOverflow[1])
     line
         .attr("x", coordsParagraph[0])
-        .attr("y", coordsParagraph[1] + (i+2) * diff) for line,i in disclaimer
+        .attr("y", coordsParagraph[1] + (i+2) * diffParagraph) for line,i in disclaimer
     line
         .attr("x", coordsParagraph[0])
-        .attr("y", coordsParagraph[1] + i * diff) for line,i in quote
+        .attr("y", coordsParagraph[1] + i * diffParagraph) for line,i in quote
 
     # Map labels
     coords = projection([-121.5,48.75])
@@ -219,13 +219,15 @@ onClickTree = (d, i) ->
 onClickEco = (d) ->
     hideTreeMenuText()
     if selected
-      selected.style('stroke', 'none')
-      if selectedTree
-        region_list = tree_regions[selectedTree.id]
-        d3.selectAll('.subunit').style('opacity', '1') for region in region_list
-        selectedTree = null
-        setTitleAndDescription('Evergreens of Washington', 'Select an ecoregion to see the list of trees native to it.')
-        showLabels()
+        selected.style('stroke', 'none')
+        if selectedTree
+            region_list = tree_regions[selectedTree.id]
+            d3.selectAll('.subunit').style('opacity', '1') for region in region_list
+            selectedTree = null
+            setTitleAndDescription('Evergreens of Washington', '')
+            showLabels()
+    else
+        setTitleAndDescription('Evergreens of Washington', 'Select a tree to see which ecoregions it grows in.')
     selected = d3.select(this)
     selected.style('stroke', 'red')
     drawTreeMenu(d.id)
@@ -336,18 +338,21 @@ splitText = (text) ->
     return [result, split.join(' ')]
 
 setTitleAndDescription = (title, description) ->
-    mapTitle
-        .transition().duration(50)
-        .style('opacity', 0)
-        .transition().duration(250)
-        .style('opacity', 1)
-        .text(title)
-    mapDescription
-        .transition().duration(50)
-        .style('opacity', 0)
-        .transition().duration(250)
-        .style('opacity', 1)
-        .text(description)
+    console.log title, mapTitle.text()
+    if mapTitle.text() != title
+        mapTitle
+            .transition().duration(50)
+            .style('opacity', 0)
+            .transition().duration(250)
+            .style('opacity', 1)
+            .text(title)
+    if mapDescription.text() != description
+        mapDescription
+            .transition().duration(50)
+            .style('opacity', 0)
+            .transition().duration(250)
+            .style('opacity', 1)
+            .text(description)
 
 setTreeMenuText = (text, detailText) ->
     overflow = ''
